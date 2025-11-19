@@ -1,0 +1,249 @@
+using API_Investimentos.Domain.Entities;
+using API_Investimentos.Domain.Enums;
+using API_Investimentos.Domain.ValueObjects;
+using FluentAssertions;
+using Xunit;
+
+namespace API_Investimentos.UnitTests.Domain.Entities;
+
+public class ProdutoTests
+{
+    [Fact]
+    public void Construtor_ComParametrosValidos_DeveCriarProduto()
+    {
+        // Arrange & Act
+        var produto = new Produto(
+            nome: "CDB Teste",
+            tipo: TipoProduto.CDB,
+            nivelRisco: NivelRisco.Baixo,
+            taxaRentabilidade: Percentual.CriarDePercentual(12m),
+            valorMinimo: Dinheiro.Criar(1000m),
+            prazoMinimoMeses: 6,
+            liquidezDiaria: false,
+            isentoIR: false
+        );
+
+        // Assert
+        produto.Nome.Should().Be("CDB Teste");
+        produto.Tipo.Should().Be(TipoProduto.CDB);
+        produto.NivelRisco.Should().Be(NivelRisco.Baixo);
+        produto.TaxaRentabilidade.Percentual.Should().Be(12m);
+        produto.ValorMinimo.Valor.Should().Be(1000m);
+        produto.PrazoMinimoMeses.Should().Be(6);
+        produto.LiquidezDiaria.Should().BeFalse();
+        produto.IsentoIR.Should().BeFalse();
+        produto.Ativo.Should().BeTrue();
+    }
+
+    [Fact]
+    public void PodeInvestir_ComValorAcimaDoMinimo_DeveRetornarTrue()
+    {
+        // Arrange
+        var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
+        var valorInvestimento = Dinheiro.Criar(1500m);
+
+        // Act
+        var resultado = produto.PodeInvestir(valorInvestimento);
+
+        // Assert
+        resultado.Should().BeTrue();
+    }
+
+    [Fact]
+    public void PodeInvestir_ComValorIgualAoMinimo_DeveRetornarTrue()
+    {
+        // Arrange
+        var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
+        var valorInvestimento = Dinheiro.Criar(1000m);
+
+        // Act
+        var resultado = produto.PodeInvestir(valorInvestimento);
+
+        // Assert
+        resultado.Should().BeTrue();
+    }
+
+    [Fact]
+    public void PodeInvestir_ComValorAbaixoDoMinimo_DeveRetornarFalse()
+    {
+        // Arrange
+        var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
+        var valorInvestimento = Dinheiro.Criar(500m);
+
+        // Act
+        var resultado = produto.PodeInvestir(valorInvestimento);
+
+        // Assert
+        resultado.Should().BeFalse();
+    }
+
+    [Fact]
+    public void PodeInvestir_ComProdutoInativo_DeveRetornarFalse()
+    {
+        // Arrange
+        var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
+        produto.Desativar();
+        var valorInvestimento = Dinheiro.Criar(1500m);
+
+        // Act
+        var resultado = produto.PodeInvestir(valorInvestimento);
+
+        // Assert
+        resultado.Should().BeFalse();
+    }
+
+    [Fact]
+    public void DefinirTaxaAdministracao_ComValorValido_DeveDefinirTaxa()
+    {
+        // Arrange
+        var produto = CriarProdutoTeste();
+        var taxa = Percentual.CriarDePercentual(2m);
+
+        // Act
+        produto.DefinirTaxaAdministracao(taxa);
+
+        // Assert
+        produto.TaxaAdministracao.Should().Be(taxa);
+    }
+
+    [Fact]
+    public void DefinirTaxaPerformance_ComValorValido_DeveDefinirTaxa()
+    {
+        // Arrange
+        var produto = CriarProdutoTeste();
+        var taxa = Percentual.CriarDePercentual(20m);
+
+        // Act
+        produto.DefinirTaxaPerformance(taxa);
+
+        // Assert
+        produto.TaxaPerformance.Should().Be(taxa);
+    }
+
+    [Fact]
+    public void Desativar_DeveMarcarProdutoComoInativo()
+    {
+        // Arrange
+        var produto = CriarProdutoTeste();
+        produto.Ativo.Should().BeTrue();
+
+        // Act
+        produto.Desativar();
+
+        // Assert
+        produto.Ativo.Should().BeFalse();
+    }
+
+    [Fact]
+    public void Reativar_DeveMarcarProdutoComoAtivo()
+    {
+        // Arrange
+        var produto = CriarProdutoTeste();
+        produto.Desativar();
+        produto.Ativo.Should().BeFalse();
+
+        // Act
+        produto.Reativar();
+
+        // Assert
+        produto.Ativo.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData(TipoProduto.CDB)]
+    [InlineData(TipoProduto.TesouroSelic)]
+    [InlineData(TipoProduto.LCI)]
+    [InlineData(TipoProduto.LCA)]
+    public void Construtor_ComDiferentesTipos_DeveCriarProdutoCorretamente(TipoProduto tipo)
+    {
+        // Act
+        var produto = new Produto(
+            nome: $"Produto {tipo}",
+            tipo: tipo,
+            nivelRisco: NivelRisco.Baixo,
+            taxaRentabilidade: Percentual.CriarDePercentual(10m),
+            valorMinimo: Dinheiro.Criar(100m),
+            prazoMinimoMeses: 1,
+            liquidezDiaria: true,
+            isentoIR: false
+        );
+
+        // Assert
+        produto.Tipo.Should().Be(tipo);
+    }
+
+    [Theory]
+    [InlineData(NivelRisco.MuitoBaixo)]
+    [InlineData(NivelRisco.Baixo)]
+    [InlineData(NivelRisco.Medio)]
+    [InlineData(NivelRisco.Alto)]
+    [InlineData(NivelRisco.MuitoAlto)]
+    public void Construtor_ComDiferentesNiveisRisco_DeveCriarProdutoCorretamente(NivelRisco nivelRisco)
+    {
+        // Act
+        var produto = CriarProdutoTeste(nivelRisco: nivelRisco);
+
+        // Assert
+        produto.NivelRisco.Should().Be(nivelRisco);
+    }
+
+    [Fact]
+    public void ProdutoLCI_DeveSerIsentoIR()
+    {
+        // Act
+        var produto = new Produto(
+            nome: "LCI Teste",
+            tipo: TipoProduto.LCI,
+            nivelRisco: NivelRisco.Baixo,
+            taxaRentabilidade: Percentual.CriarDePercentual(10m),
+            valorMinimo: Dinheiro.Criar(10000m),
+            prazoMinimoMeses: 12,
+            liquidezDiaria: false,
+            isentoIR: true
+        );
+
+        // Assert
+        produto.IsentoIR.Should().BeTrue();
+    }
+
+    [Fact]
+    public void ProdutoLCA_DeveSerIsentoIR()
+    {
+        // Act
+        var produto = new Produto(
+            nome: "LCA Teste",
+            tipo: TipoProduto.LCA,
+            nivelRisco: NivelRisco.Baixo,
+            taxaRentabilidade: Percentual.CriarDePercentual(10m),
+            valorMinimo: Dinheiro.Criar(10000m),
+            prazoMinimoMeses: 12,
+            liquidezDiaria: false,
+            isentoIR: true
+        );
+
+        // Assert
+        produto.IsentoIR.Should().BeTrue();
+    }
+
+    private static Produto CriarProdutoTeste(
+        string nome = "Produto Teste",
+        TipoProduto tipo = TipoProduto.CDB,
+        NivelRisco nivelRisco = NivelRisco.Baixo,
+        Percentual? taxaRentabilidade = null,
+        Dinheiro? valorMinimo = null,
+        int prazoMinimoMeses = 6,
+        bool liquidezDiaria = false,
+        bool isentoIR = false)
+    {
+        return new Produto(
+            nome: nome,
+            tipo: tipo,
+            nivelRisco: nivelRisco,
+            taxaRentabilidade: taxaRentabilidade ?? Percentual.CriarDePercentual(12m),
+            valorMinimo: valorMinimo ?? Dinheiro.Criar(1000m),
+            prazoMinimoMeses: prazoMinimoMeses,
+            liquidezDiaria: liquidezDiaria,
+            isentoIR: isentoIR
+        );
+    }
+}
