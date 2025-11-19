@@ -1,6 +1,7 @@
 using API_Investimentos.Api.Middleware;
 using API_Investimentos.Application;
 using API_Investimentos.Infrastructure;
+using API_Investimentos.Infrastructure.Data;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
@@ -68,6 +69,23 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+// Inicializar banco de dados e seed
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<InvestimentosDbContext>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        await DbInitializer.InitializeAsync(context, logger);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Erro ao inicializar o banco de dados");
+    }
+}
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
