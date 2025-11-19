@@ -27,7 +27,7 @@ public class ProdutoTests
         produto.Nome.Should().Be("CDB Teste");
         produto.Tipo.Should().Be(TipoProduto.CDB);
         produto.NivelRisco.Should().Be(NivelRisco.Baixo);
-        produto.TaxaRentabilidade.Percentual.Should().Be(12m);
+        produto.TaxaRentabilidade.EmPercentual.Should().Be(12m);
         produto.ValorMinimo.Valor.Should().Be(1000m);
         produto.PrazoMinimoMeses.Should().Be(6);
         produto.LiquidezDiaria.Should().BeFalse();
@@ -41,9 +41,10 @@ public class ProdutoTests
         // Arrange
         var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
         var valorInvestimento = Dinheiro.Criar(1500m);
+        var prazoMeses = 12;
 
         // Act
-        var resultado = produto.PodeInvestir(valorInvestimento);
+        var resultado = produto.PodeInvestir(valorInvestimento, prazoMeses);
 
         // Assert
         resultado.Should().BeTrue();
@@ -55,9 +56,10 @@ public class ProdutoTests
         // Arrange
         var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
         var valorInvestimento = Dinheiro.Criar(1000m);
+        var prazoMeses = 12;
 
         // Act
-        var resultado = produto.PodeInvestir(valorInvestimento);
+        var resultado = produto.PodeInvestir(valorInvestimento, prazoMeses);
 
         // Assert
         resultado.Should().BeTrue();
@@ -69,9 +71,10 @@ public class ProdutoTests
         // Arrange
         var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
         var valorInvestimento = Dinheiro.Criar(500m);
+        var prazoMeses = 12;
 
         // Act
-        var resultado = produto.PodeInvestir(valorInvestimento);
+        var resultado = produto.PodeInvestir(valorInvestimento, prazoMeses);
 
         // Assert
         resultado.Should().BeFalse();
@@ -84,9 +87,10 @@ public class ProdutoTests
         var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
         produto.Desativar();
         var valorInvestimento = Dinheiro.Criar(1500m);
+        var prazoMeses = 12;
 
         // Act
-        var resultado = produto.PodeInvestir(valorInvestimento);
+        var resultado = produto.PodeInvestir(valorInvestimento, prazoMeses);
 
         // Assert
         resultado.Should().BeFalse();
@@ -96,7 +100,7 @@ public class ProdutoTests
     public void DefinirTaxaAdministracao_ComValorValido_DeveDefinirTaxa()
     {
         // Arrange
-        var produto = CriarProdutoTeste();
+        var produto = CriarProdutoTeste(tipo: TipoProduto.Fundo);
         var taxa = Percentual.CriarDePercentual(2m);
 
         // Act
@@ -110,7 +114,7 @@ public class ProdutoTests
     public void DefinirTaxaPerformance_ComValorValido_DeveDefinirTaxa()
     {
         // Arrange
-        var produto = CriarProdutoTeste();
+        var produto = CriarProdutoTeste(tipo: TipoProduto.Fundo);
         var taxa = Percentual.CriarDePercentual(20m);
 
         // Act
@@ -135,7 +139,7 @@ public class ProdutoTests
     }
 
     [Fact]
-    public void Reativar_DeveMarcarProdutoComoAtivo()
+    public void Ativar_DeveMarcarProdutoComoAtivo()
     {
         // Arrange
         var produto = CriarProdutoTeste();
@@ -143,7 +147,7 @@ public class ProdutoTests
         produto.Ativo.Should().BeFalse();
 
         // Act
-        produto.Reativar();
+        produto.Ativar();
 
         // Assert
         produto.Ativo.Should().BeTrue();

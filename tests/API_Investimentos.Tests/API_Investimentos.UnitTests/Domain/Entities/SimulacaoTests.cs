@@ -192,7 +192,7 @@ public class SimulacaoTests
 
         // Assert
         // (11000 - 10000) / 10000 = 0.1 = 10%
-        rentabilidade.Percentual.Should().BeApproximately(10m, 0.01m);
+        rentabilidade.EmPercentual.Should().BeApproximately(10m, 0.01m);
     }
 
     [Fact]

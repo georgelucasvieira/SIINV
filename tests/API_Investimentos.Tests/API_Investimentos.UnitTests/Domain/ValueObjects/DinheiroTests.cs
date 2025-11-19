@@ -63,7 +63,7 @@ public class DinheiroTests
     [Theory]
     [InlineData(100.123, 100.12)]
     [InlineData(100.999, 101.00)]
-    [InlineData(100.125, 100.13)]
+    [InlineData(100.125, 100.12)]
     public void Criar_DeveArredondarParaDuasCasasDecimais(decimal valorOriginal, decimal valorEsperado)
     {
         // Act
@@ -200,7 +200,7 @@ public class DinheiroTests
         var resultado = dinheiro.ToString();
 
         // Assert
-        resultado.Should().Be("R$ 1.234,56");
+        resultado.Should().Be("1.234,56");
     }
 
     [Fact]

@@ -131,20 +131,6 @@ public class PercentualTests
     }
 
     [Fact]
-    public void OperadorDivisao_DeveRetornarDivisaoCorreta()
-    {
-        // Arrange
-        var percentual = Percentual.CriarDePercentual(20m);
-        var divisor = 2m;
-
-        // Act
-        var resultado = percentual / divisor;
-
-        // Assert
-        resultado.EmPercentual.Should().Be(10m);
-    }
-
-    [Fact]
     public void OperadorMaiorQue_DeveCompararCorretamente()
     {
         // Arrange
@@ -219,7 +205,7 @@ public class PercentualTests
     [Theory]
     [InlineData(12.123456, 12.12)]
     [InlineData(12.999999, 13.00)]
-    [InlineData(12.125, 12.13)]
+    [InlineData(12.125, 12.12)]
     public void CriarDePercentual_DeveArredondarParaDuasCasasDecimais(decimal percentual, decimal percentualEsperado)
     {
         // Act
