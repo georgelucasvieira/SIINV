@@ -108,6 +108,9 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Inicializar banco de dados e criar admin padrão
+await DbInitializer.InitializeAsync(app.Services);
+
 // Configurar pipeline HTTP
 if (app.Environment.IsDevelopment())
 {
