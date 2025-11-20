@@ -34,13 +34,9 @@ public static class DependencyInjection
         // Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // RabbitMQ
+        // RabbitMQ (apenas Publisher - Consumer está no Worker_Simulacao)
         services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
         services.AddSingleton<IMessagePublisher, RabbitMQPublisher>();
-        services.AddSingleton<IMessageConsumer, RabbitMQConsumer>();
-
-        // Background Services
-        services.AddHostedService<SimulacaoMessageConsumerService>();
 
         return services;
     }
