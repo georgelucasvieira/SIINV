@@ -125,3 +125,6 @@ finally
 {
     Log.CloseAndFlush();
 }
+
+// Make the implicit Program class public so integration tests can access it
+public partial class Program { }
