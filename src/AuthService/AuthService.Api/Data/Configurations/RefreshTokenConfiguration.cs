@@ -25,21 +25,14 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(rt => rt.UsuarioId)
             .IsRequired();
 
+        // Índice único para garantir 1 refresh token por usuário
+        builder.HasIndex(rt => rt.UsuarioId)
+            .IsUnique();
+
         builder.Property(rt => rt.ExpiraEm)
             .IsRequired();
 
-        builder.Property(rt => rt.Revogado)
-            .IsRequired()
-            .HasDefaultValue(false);
-
-        builder.Property(rt => rt.SubstituidoPor)
-            .HasMaxLength(500);
-
         builder.Property(rt => rt.CriadoEm)
             .IsRequired();
-
-        builder.HasIndex(rt => rt.UsuarioId);
-        builder.HasIndex(rt => rt.ExpiraEm);
-        builder.HasIndex(rt => new { rt.UsuarioId, rt.Revogado });
     }
 }

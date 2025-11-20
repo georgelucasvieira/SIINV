@@ -1,7 +1,7 @@
 namespace AuthService.Api.Data.Entities;
 
 /// <summary>
-/// Entidade para armazenar refresh tokens
+/// Entidade para armazenar refresh token (1 por usuário)
 /// </summary>
 public class RefreshToken
 {
@@ -12,9 +12,6 @@ public class RefreshToken
     public string Token { get; private set; } = string.Empty;
     public long UsuarioId { get; private set; }
     public DateTime ExpiraEm { get; private set; }
-    public bool Revogado { get; private set; }
-    public DateTime? RevogadoEm { get; private set; }
-    public string? SubstituidoPor { get; private set; }
 
     protected RefreshToken() { }
 
@@ -29,16 +26,20 @@ public class RefreshToken
         Token = token;
         UsuarioId = usuarioId;
         ExpiraEm = expiraEm;
-        Revogado = false;
     }
 
-    public bool EstaAtivo => !Revogado && ExpiraEm > DateTime.UtcNow;
+    public bool EstaAtivo => ExpiraEm > DateTime.UtcNow;
 
-    public void Revogar(string? substituidoPor = null)
+    /// <summary>
+    /// Atualiza o token com novo valor e expiração
+    /// </summary>
+    public void Atualizar(string novoToken, DateTime novaExpiracao)
     {
-        Revogado = true;
-        RevogadoEm = DateTime.UtcNow;
-        SubstituidoPor = substituidoPor;
+        if (string.IsNullOrWhiteSpace(novoToken))
+            throw new ArgumentException("Token é obrigatório", nameof(novoToken));
+
+        Token = novoToken;
+        ExpiraEm = novaExpiracao;
         AtualizadoEm = DateTime.UtcNow;
     }
 }

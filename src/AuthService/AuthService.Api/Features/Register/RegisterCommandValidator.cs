@@ -21,8 +21,5 @@ public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
             .Matches(@"[A-Z]").WithMessage("Senha deve conter pelo menos uma letra maiúscula")
             .Matches(@"[a-z]").WithMessage("Senha deve conter pelo menos uma letra minúscula")
             .Matches(@"[0-9]").WithMessage("Senha deve conter pelo menos um número");
-
-        RuleFor(x => x.ConfirmacaoSenha)
-            .Equal(x => x.Senha).WithMessage("Confirmação de senha não confere");
     }
 }

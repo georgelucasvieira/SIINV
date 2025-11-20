@@ -48,17 +48,30 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
 
         usuario.RegistrarLogin();
 
+        // Gerar tokens
         var token = _jwtService.GerarToken(usuario);
         var refreshTokenValue = _jwtService.GerarRefreshToken();
         var expiraEm = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiracaoMinutos);
+        var refreshExpiraEm = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiracaoDias);
 
-        var refreshToken = new Data.Entities.RefreshToken(
-            refreshTokenValue,
-            usuario.Id,
-            DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiracaoDias)
-        );
+        // Buscar ou criar refresh token (1 por usuário)
+        var refreshToken = await _context.RefreshTokens
+            .FirstOrDefaultAsync(rt => rt.UsuarioId == usuario.Id, cancellationToken);
 
-        _context.RefreshTokens.Add(refreshToken);
+        if (refreshToken == null)
+        {
+            refreshToken = new Data.Entities.RefreshToken(
+                refreshTokenValue,
+                usuario.Id,
+                refreshExpiraEm
+            );
+            _context.RefreshTokens.Add(refreshToken);
+        }
+        else
+        {
+            refreshToken.Atualizar(refreshTokenValue, refreshExpiraEm);
+        }
+
         await _context.SaveChangesAsync(cancellationToken);
 
         return AuthResponse.Ok(

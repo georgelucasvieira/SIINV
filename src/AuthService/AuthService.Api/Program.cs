@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using AuthService.Api.Data;
 using AuthService.Api.Features.GetCurrentUser;
@@ -34,6 +36,9 @@ builder.Services.Configure<JwtSettings>(jwtSettings);
 var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret não configurado");
 var key = Encoding.UTF8.GetBytes(secret);
 
+// Desabilitar mapeamento automático de claims do JWT
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -52,7 +57,9 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = jwtSettings["Audience"],
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        NameClaimType = ClaimTypes.NameIdentifier,
+        RoleClaimType = ClaimTypes.Role
     };
 });
 

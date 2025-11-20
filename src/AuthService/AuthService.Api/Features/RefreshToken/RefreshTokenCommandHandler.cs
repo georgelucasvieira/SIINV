@@ -26,6 +26,7 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
     public async Task<AuthResponse> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
+        // Buscar refresh token pelo valor
         var refreshToken = await _context.RefreshTokens
             .FirstOrDefaultAsync(rt => rt.Token == request.RefreshToken, cancellationToken);
 
@@ -36,30 +37,26 @@ public class RefreshTokenCommandHandler : IRequestHandler<RefreshTokenCommand, A
 
         if (!refreshToken.EstaAtivo)
         {
-            return AuthResponse.Falha("Refresh token expirado ou revogado");
+            return AuthResponse.Falha("Refresh token expirado");
         }
 
+        // Buscar usuário
         var usuario = await _context.Usuarios
-            .FirstOrDefaultAsync(u => u.Id == refreshToken.UsuarioId, cancellationToken);
+            .FirstOrDefaultAsync(u => u.Id == refreshToken.UsuarioId && u.Ativo, cancellationToken);
 
-        if (usuario == null || !usuario.Ativo)
+        if (usuario == null)
         {
             return AuthResponse.Falha("Usuário não encontrado ou inativo");
         }
 
-        var novoRefreshTokenValue = _jwtService.GerarRefreshToken();
-        refreshToken.Revogar(novoRefreshTokenValue);
-
-        var novoRefreshToken = new Data.Entities.RefreshToken(
-            novoRefreshTokenValue,
-            usuario.Id,
-            DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiracaoDias)
-        );
-
-        _context.RefreshTokens.Add(novoRefreshToken);
-
+        // Gerar novos tokens
         var token = _jwtService.GerarToken(usuario);
+        var novoRefreshTokenValue = _jwtService.GerarRefreshToken();
         var expiraEm = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiracaoMinutos);
+        var refreshExpiraEm = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiracaoDias);
+
+        // Atualizar o refresh token existente
+        refreshToken.Atualizar(novoRefreshTokenValue, refreshExpiraEm);
 
         await _context.SaveChangesAsync(cancellationToken);
 
