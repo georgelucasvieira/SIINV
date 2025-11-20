@@ -23,12 +23,9 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// Configurar DbContext com schema dedicado
+// Configurar DbContext
 builder.Services.AddDbContext<AuthDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("AuthConnection"),
-        sqlOptions => sqlOptions.MigrationsHistoryTable("__EFMigrationsHistory", AuthDbContext.SchemaName)
-    ));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection")));
 
 // Configurar JWT
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName);

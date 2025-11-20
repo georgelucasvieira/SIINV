@@ -4,12 +4,10 @@ using Microsoft.EntityFrameworkCore;
 namespace AuthService.Api.Data;
 
 /// <summary>
-/// DbContext para o Auth Service com schema dedicado
+/// DbContext para o Auth Service
 /// </summary>
 public class AuthDbContext : DbContext
 {
-    public const string SchemaName = "Auth";
-
     public AuthDbContext(DbContextOptions<AuthDbContext> options)
         : base(options)
     {
@@ -21,9 +19,6 @@ public class AuthDbContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-
-        // Definir schema padrão para todas as tabelas
-        modelBuilder.HasDefaultSchema(SchemaName);
 
         // Aplicar todas as configurações do assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuthDbContext).Assembly);
