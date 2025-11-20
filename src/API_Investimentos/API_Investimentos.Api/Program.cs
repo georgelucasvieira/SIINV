@@ -1,7 +1,10 @@
+using System.Text;
 using API_Investimentos.Api.Middleware;
 using API_Investimentos.Application;
 using API_Investimentos.Infrastructure;
 using API_Investimentos.Infrastructure.Data;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 using System.Reflection;
@@ -24,6 +27,43 @@ builder.Services.AddControllers();
 // Adicionar camadas
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// Configurar JWT Authentication
+// Tokens são gerados pelo Auth Service, aqui apenas validamos
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var secret = jwtSection["Secret"] ?? throw new InvalidOperationException("JWT Secret não configurado");
+var issuer = jwtSection["Issuer"] ?? throw new InvalidOperationException("JWT Issuer não configurado");
+var audience = jwtSection["Audience"] ?? throw new InvalidOperationException("JWT Audience não configurado");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = issuer,
+        ValidAudience = audience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+// Configurar Authorization com políticas RBAC
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("GerenteOuAdmin", policy => policy.RequireRole("Admin", "Gerente"));
+    options.AddPolicy("UsuarioAutenticado", policy => policy.RequireAuthenticatedUser());
+});
 
 // Configurar Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();
@@ -56,6 +96,31 @@ builder.Services.AddSwaggerGen(c =>
     {
         c.IncludeXmlComments(applicationXmlPath);
     }
+
+    // Configurar autenticação JWT no Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Authorization: Bearer {token}\"",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
 });
 
 // CORS (se necessário)
@@ -108,6 +173,7 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
