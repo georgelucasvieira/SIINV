@@ -1,5 +1,8 @@
+using API_Investimentos.Application.Messaging;
+using API_Investimentos.Application.Messaging.Interfaces;
 using API_Investimentos.Domain.Interfaces;
 using API_Investimentos.Infrastructure.Data;
+using API_Investimentos.Infrastructure.Messaging;
 using API_Investimentos.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +33,14 @@ public static class DependencyInjection
 
         // Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // RabbitMQ
+        services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
+        services.AddSingleton<IMessagePublisher, RabbitMQPublisher>();
+        services.AddSingleton<IMessageConsumer, RabbitMQConsumer>();
+
+        // Background Services
+        services.AddHostedService<SimulacaoMessageConsumerService>();
 
         return services;
     }

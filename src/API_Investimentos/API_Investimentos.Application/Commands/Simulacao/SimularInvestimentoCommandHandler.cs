@@ -1,5 +1,8 @@
 using API_Investimentos.Application.Common;
 using API_Investimentos.Application.DTOs.Responses;
+using API_Investimentos.Application.Messaging;
+using API_Investimentos.Application.Messaging.Events;
+using API_Investimentos.Application.Messaging.Interfaces;
 using API_Investimentos.Application.Services;
 using API_Investimentos.Domain.Enums;
 using API_Investimentos.Domain.Interfaces;
@@ -15,13 +18,16 @@ public class SimularInvestimentoCommandHandler : IRequestHandler<SimularInvestim
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICalculadoraInvestimentos _calculadora;
+    private readonly IMessagePublisher _messagePublisher;
 
     public SimularInvestimentoCommandHandler(
         IUnitOfWork unitOfWork,
-        ICalculadoraInvestimentos calculadora)
+        ICalculadoraInvestimentos calculadora,
+        IMessagePublisher messagePublisher)
     {
         _unitOfWork = unitOfWork;
         _calculadora = calculadora;
+        _messagePublisher = messagePublisher;
     }
 
     public async Task<Result<SimulacaoResponse>> Handle(
@@ -79,7 +85,30 @@ public class SimularInvestimentoCommandHandler : IRequestHandler<SimularInvestim
         await _unitOfWork.Simulacoes.AdicionarAsync(simulacao, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // 8. Montar response
+        // 8. Publicar evento de simulação realizada
+        var evento = new SimulacaoRealizadaEvent
+        {
+            SimulacaoId = simulacao.Id,
+            ClienteId = simulacao.ClienteId,
+            ProdutoId = produtoAdequado.Id,
+            TipoProduto = produtoAdequado.Tipo.ToString(),
+            ValorInvestido = simulacao.ValorInvestido.Valor,
+            ValorFinalBruto = simulacao.ValorFinalBruto.Valor,
+            ValorFinalLiquido = simulacao.ValorFinalLiquido.Valor,
+            RendimentoBruto = simulacao.CalcularRendimentoBruto().Valor,
+            RendimentoLiquido = simulacao.CalcularRendimentoLiquido().Valor,
+            PrazoMeses = simulacao.PrazoMeses,
+            DataSimulacao = simulacao.CriadoEm,
+            DataVencimento = simulacao.DataVencimento
+        };
+
+        await _messagePublisher.PublishToExchangeAsync(
+            evento,
+            RabbitMQConstants.InvestimentosExchange,
+            RabbitMQConstants.SimulacaoRealizadaRoutingKey,
+            cancellationToken);
+
+        // 9. Montar response
         var response = new SimulacaoResponse
         {
             Id = simulacao.Id,
