@@ -17,19 +17,22 @@ public class UnitOfWork : IUnitOfWork
         IRepositorioProduto produtos,
         IRepositorioSimulacao simulacoes,
         IRepositorioPerfilRisco perfisRisco,
-        IRepositorioHistoricoInvestimento historicoInvestimentos)
+        IRepositorioHistoricoInvestimento historicoInvestimentos,
+        IRepositorioCliente clientes)
     {
         _context = context;
         Produtos = produtos;
         Simulacoes = simulacoes;
         PerfisRisco = perfisRisco;
         HistoricoInvestimentos = historicoInvestimentos;
+        Clientes = clientes;
     }
 
     public IRepositorioProduto Produtos { get; }
     public IRepositorioSimulacao Simulacoes { get; }
     public IRepositorioPerfilRisco PerfisRisco { get; }
     public IRepositorioHistoricoInvestimento HistoricoInvestimentos { get; }
+    public IRepositorioCliente Clientes { get; }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

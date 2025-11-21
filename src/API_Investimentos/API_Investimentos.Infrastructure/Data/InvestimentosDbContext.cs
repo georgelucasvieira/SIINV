@@ -17,6 +17,7 @@ public class InvestimentosDbContext : DbContext
     public DbSet<Simulacao> Simulacoes => Set<Simulacao>();
     public DbSet<PerfilRisco> PerfisRisco => Set<PerfilRisco>();
     public DbSet<HistoricoInvestimento> HistoricoInvestimentos => Set<HistoricoInvestimento>();
+    public DbSet<Cliente> Clientes => Set<Cliente>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -30,6 +31,7 @@ public class InvestimentosDbContext : DbContext
         modelBuilder.Entity<Simulacao>().HasQueryFilter(s => !s.Excluido);
         modelBuilder.Entity<PerfilRisco>().HasQueryFilter(pr => !pr.Excluido);
         modelBuilder.Entity<HistoricoInvestimento>().HasQueryFilter(hi => !hi.Excluido);
+        modelBuilder.Entity<Cliente>().HasQueryFilter(c => !c.Excluido);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

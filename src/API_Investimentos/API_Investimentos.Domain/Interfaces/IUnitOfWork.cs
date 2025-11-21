@@ -26,6 +26,11 @@ public interface IUnitOfWork : IDisposable
     IRepositorioHistoricoInvestimento HistoricoInvestimentos { get; }
 
     /// <summary>
+    /// Repositório de clientes
+    /// </summary>
+    IRepositorioCliente Clientes { get; }
+
+    /// <summary>
     /// Salva todas as alterações no banco de dados
     /// </summary>
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

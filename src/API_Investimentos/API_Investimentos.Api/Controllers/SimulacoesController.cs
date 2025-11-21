@@ -2,6 +2,7 @@ using API_Investimentos.Application.Commands.Simulacao;
 using API_Investimentos.Application.DTOs.Requests;
 using API_Investimentos.Application.Queries.Simulacao;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_Investimentos.Api.Controllers;
@@ -12,6 +13,7 @@ namespace API_Investimentos.Api.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class SimulacoesController : ControllerBase
 {
     private readonly IMediator _mediator;

@@ -1,5 +1,6 @@
 using API_Investimentos.Application.Queries.Produto;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_Investimentos.Api.Controllers;
@@ -10,6 +11,7 @@ namespace API_Investimentos.Api.Controllers;
 [ApiController]
 [Route("api/v1/[controller]")]
 [Produces("application/json")]
+[Authorize]
 public class ProdutosController : ControllerBase
 {
     private readonly IMediator _mediator;
