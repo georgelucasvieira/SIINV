@@ -9,6 +9,7 @@ using API_Investimentos.Infrastructure.Data;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 using Serilog;
 using System.Reflection;
 
@@ -196,6 +197,9 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHttpMetrics();
+app.MapMetrics();
 
 try
 {
