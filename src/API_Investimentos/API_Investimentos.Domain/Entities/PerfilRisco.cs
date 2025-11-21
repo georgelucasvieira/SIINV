@@ -38,7 +38,7 @@ public class PerfilRisco : BaseEntity
     /// </summary>
     public DateTime DataProximaAvaliacao { get; private set; }
 
-    // Construtor privado para EF Core
+
     private PerfilRisco()
     {
         Descricao = string.Empty;

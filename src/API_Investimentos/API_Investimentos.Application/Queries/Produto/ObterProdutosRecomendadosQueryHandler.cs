@@ -22,18 +22,18 @@ public class ObterProdutosRecomendadosQueryHandler
         ObterProdutosRecomendadosQuery request,
         CancellationToken cancellationToken)
     {
-        // Validar e converter o perfil
+
         if (!Enum.TryParse<PerfilInvestidor>(request.Perfil, true, out var perfil))
         {
             return Result<List<ProdutoRecomendadoResponse>>.Falha(
                 $"Perfil inválido. Valores aceitos: {string.Join(", ", Enum.GetNames<PerfilInvestidor>())}");
         }
 
-        // Obter todos os produtos ativos
+
         var produtos = await _unitOfWork.Produtos.ObterTodosAsync(cancellationToken);
         var produtosAtivos = produtos.Where(p => p.Ativo).ToList();
 
-        // Filtrar produtos com base no perfil
+
         var niveisRiscoPermitidos = ObterNiveisRiscoPorPerfil(perfil);
 
         var produtosRecomendados = produtosAtivos

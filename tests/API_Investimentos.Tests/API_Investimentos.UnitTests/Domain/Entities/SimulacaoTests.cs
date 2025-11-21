@@ -11,10 +11,10 @@ public class SimulacaoTests
     [Fact]
     public void Construtor_ComParametrosValidos_DeveCriarSimulacao()
     {
-        // Arrange & Act
+
         var simulacao = CriarSimulacaoTeste();
 
-        // Assert
+
         simulacao.ClienteId.Should().Be(1);
         simulacao.ProdutoId.Should().Be(1);
         simulacao.ValorInvestido.Valor.Should().Be(10000m);
@@ -27,7 +27,7 @@ public class SimulacaoTests
     [Fact]
     public void Construtor_ComClienteIdInvalido_DeveLancarExcecao()
     {
-        // Arrange & Act
+
         Action act = () => new Simulacao(
             clienteId: 0,
             produtoId: 1,
@@ -41,7 +41,7 @@ public class SimulacaoTests
             aliquotaIR: Percentual.CriarDePercentual(20m)
         );
 
-        // Assert
+
         act.Should().Throw<ArgumentException>()
             .WithMessage("ClienteId inválido*");
     }
@@ -49,7 +49,7 @@ public class SimulacaoTests
     [Fact]
     public void Construtor_ComProdutoIdInvalido_DeveLancarExcecao()
     {
-        // Arrange & Act
+
         Action act = () => new Simulacao(
             clienteId: 1,
             produtoId: 0,
@@ -63,7 +63,7 @@ public class SimulacaoTests
             aliquotaIR: Percentual.CriarDePercentual(20m)
         );
 
-        // Assert
+
         act.Should().Throw<ArgumentException>()
             .WithMessage("ProdutoId inválido*");
     }
@@ -71,7 +71,7 @@ public class SimulacaoTests
     [Fact]
     public void Construtor_ComPrazoInvalido_DeveLancarExcecao()
     {
-        // Arrange & Act
+
         Action act = () => new Simulacao(
             clienteId: 1,
             produtoId: 1,
@@ -85,7 +85,7 @@ public class SimulacaoTests
             aliquotaIR: Percentual.CriarDePercentual(20m)
         );
 
-        // Assert
+
         act.Should().Throw<ArgumentException>()
             .WithMessage("Prazo deve ser maior que zero*");
     }
@@ -93,27 +93,27 @@ public class SimulacaoTests
     [Fact]
     public void MarcarComoConcluida_DeveAlterarStatusParaConcluida()
     {
-        // Arrange
+
         var simulacao = CriarSimulacaoTeste();
 
-        // Act
+
         simulacao.MarcarComoConcluida();
 
-        // Assert
+
         simulacao.Status.Should().Be(StatusSimulacao.Concluida);
     }
 
     [Fact]
     public void MarcarComoErro_ComMensagem_DeveAlterarStatusParaErro()
     {
-        // Arrange
+
         var simulacao = CriarSimulacaoTeste();
         var mensagemErro = "Erro ao processar simulação";
 
-        // Act
+
         simulacao.MarcarComoErro(mensagemErro);
 
-        // Assert
+
         simulacao.Status.Should().Be(StatusSimulacao.Erro);
         simulacao.Observacoes.Should().Be(mensagemErro);
     }
@@ -121,27 +121,27 @@ public class SimulacaoTests
     [Fact]
     public void Cancelar_DeveAlterarStatusParaCancelada()
     {
-        // Arrange
+
         var simulacao = CriarSimulacaoTeste();
 
-        // Act
+
         simulacao.Cancelar();
 
-        // Assert
+
         simulacao.Status.Should().Be(StatusSimulacao.Cancelada);
     }
 
     [Fact]
     public void Cancelar_ComMotivo_DeveRegistrarMotivo()
     {
-        // Arrange
+
         var simulacao = CriarSimulacaoTeste();
         var motivo = "Cancelada pelo usuário";
 
-        // Act
+
         simulacao.Cancelar(motivo);
 
-        // Assert
+
         simulacao.Status.Should().Be(StatusSimulacao.Cancelada);
         simulacao.Observacoes.Should().Be(motivo);
     }
@@ -149,79 +149,79 @@ public class SimulacaoTests
     [Fact]
     public void CalcularRendimentoBruto_DeveRetornarDiferencaEntreValorFinalEInvestido()
     {
-        // Arrange
+
         var simulacao = CriarSimulacaoTeste(
             valorInvestido: Dinheiro.Criar(10000m),
             valorFinalBruto: Dinheiro.Criar(11200m)
         );
 
-        // Act
+
         var rendimento = simulacao.CalcularRendimentoBruto();
 
-        // Assert
+
         rendimento.Valor.Should().Be(1200m);
     }
 
     [Fact]
     public void CalcularRendimentoLiquido_DeveRetornarDiferencaEntreValorFinalLiquidoEInvestido()
     {
-        // Arrange
+
         var simulacao = CriarSimulacaoTeste(
             valorInvestido: Dinheiro.Criar(10000m),
             valorFinalLiquido: Dinheiro.Criar(11000m)
         );
 
-        // Act
+
         var rendimento = simulacao.CalcularRendimentoLiquido();
 
-        // Assert
+
         rendimento.Valor.Should().Be(1000m);
     }
 
     [Fact]
     public void CalcularRentabilidadeLiquida_DeveCalcularPercentualCorreto()
     {
-        // Arrange
+
         var simulacao = CriarSimulacaoTeste(
             valorInvestido: Dinheiro.Criar(10000m),
             valorFinalLiquido: Dinheiro.Criar(11000m)
         );
 
-        // Act
+
         var rentabilidade = simulacao.CalcularRentabilidadeLiquida();
 
-        // Assert
-        // (11000 - 10000) / 10000 = 0.1 = 10%
+
+
         rentabilidade.EmPercentual.Should().BeApproximately(10m, 0.01m);
     }
 
     [Fact]
     public void CalcularRentabilidadeLiquida_ComValorInvestidoZero_DeveRetornarZero()
     {
-        // Arrange
+
         var simulacao = CriarSimulacaoTeste(
             valorInvestido: Dinheiro.Criar(0m),
             valorFinalLiquido: Dinheiro.Criar(0m)
         );
 
-        // Act
+
         var rentabilidade = simulacao.CalcularRentabilidadeLiquida();
 
-        // Assert
+
         rentabilidade.Should().Be(Percentual.Zero);
     }
 
     [Fact]
     public void DefinirUsuarioAtualizacao_DeveDefinirUsuarioId()
     {
-        // Arrange
+
         var simulacao = CriarSimulacaoTeste();
         var usuarioId = 5L;
 
-        // Act
+
         simulacao.DefinirUsuarioAtualizacao(usuarioId);
 
-        // Assert
+
         simulacao.AtualizadoPorId.Should().Be(usuarioId);
     }
 
@@ -232,28 +232,28 @@ public class SimulacaoTests
     [InlineData(36)]
     public void Construtor_ComDiferentesPrazos_DeveCriarSimulacaoCorretamente(int prazoMeses)
     {
-        // Act
+
         var simulacao = CriarSimulacaoTeste(prazoMeses: prazoMeses);
 
-        // Assert
+
         simulacao.PrazoMeses.Should().Be(prazoMeses);
     }
 
     [Fact]
     public void DataVencimento_DeveSerCalculadaCorretamente()
     {
-        // Arrange
+
         var dataAtual = DateTime.UtcNow;
         var prazoMeses = 12;
         var dataVencimentoEsperada = dataAtual.AddMonths(prazoMeses);
 
-        // Act
+
         var simulacao = CriarSimulacaoTeste(
             prazoMeses: prazoMeses,
             dataVencimento: dataVencimentoEsperada
         );
 
-        // Assert
+
         simulacao.DataVencimento.Should().BeCloseTo(dataVencimentoEsperada, TimeSpan.FromSeconds(5));
     }
 

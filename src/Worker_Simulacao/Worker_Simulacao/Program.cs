@@ -13,21 +13,21 @@ try
 
     var builder = Host.CreateApplicationBuilder(args);
 
-    // Configurar Serilog
+
     builder.Services.AddSerilog((services, lc) => lc
         .ReadFrom.Configuration(builder.Configuration)
         .ReadFrom.Services(services)
         .Enrich.FromLogContext()
         .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] {Message:lj}{NewLine}{Exception}"));
 
-    // Configurar RabbitMQ
+
     builder.Services.Configure<RabbitMQSettings>(
         builder.Configuration.GetSection("RabbitMQ"));
 
-    // Registrar serviços
+
     builder.Services.AddScoped<RabbitMQConsumer>();
 
-    // Registrar Worker
+
     builder.Services.AddHostedService<Worker>();
 
     var host = builder.Build();

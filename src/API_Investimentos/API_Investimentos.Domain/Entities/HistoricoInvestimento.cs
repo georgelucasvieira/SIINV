@@ -49,7 +49,7 @@ public class HistoricoInvestimento : BaseEntity
     /// </summary>
     public DateTime? DataResgate { get; private set; }
 
-    // Construtor privado para EF Core
+
     private HistoricoInvestimento()
     {
         Valor = Dinheiro.Zero;

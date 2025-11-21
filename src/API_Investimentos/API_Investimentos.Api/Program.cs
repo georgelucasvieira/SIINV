@@ -13,7 +13,7 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar Serilog
+
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -23,14 +23,14 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// Add services to the container
+
 builder.Services.AddControllers();
 
-// Adicionar camadas
+
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
-// Configurar HttpClient para AuthService
+
 var authServiceUrl = builder.Configuration["AuthService:BaseUrl"]
     ?? throw new InvalidOperationException("AuthService:BaseUrl não configurado");
 builder.Services.AddHttpClient("AuthService", client =>
@@ -39,14 +39,14 @@ builder.Services.AddHttpClient("AuthService", client =>
     client.DefaultRequestHeaders.Add("Accept", "application/json");
 });
 
-// Configurar JWT Authentication
-// Tokens são gerados pelo Auth Service, aqui apenas validamos
+
+
 var jwtSection = builder.Configuration.GetSection("Jwt");
 var secret = jwtSection["Secret"] ?? throw new InvalidOperationException("JWT Secret não configurado");
 var issuer = jwtSection["Issuer"] ?? throw new InvalidOperationException("JWT Issuer não configurado");
 var audience = jwtSection["Audience"] ?? throw new InvalidOperationException("JWT Audience não configurado");
 
-// Desabilitar mapeamento automático de claims do JWT (igual ao AuthService)
+
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddAuthentication(options =>
@@ -73,7 +73,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// Configurar Authorization com políticas RBAC
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
@@ -81,7 +81,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("UsuarioAutenticado", policy => policy.RequireAuthenticatedUser());
 });
 
-// Configurar Swagger/OpenAPI
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -97,7 +97,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 
-    // Incluir comentários XML
+
     var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     if (File.Exists(xmlPath))
@@ -105,7 +105,7 @@ builder.Services.AddSwaggerGen(c =>
         c.IncludeXmlComments(xmlPath);
     }
 
-    // Incluir comentários XML da Application
+
     var applicationXmlFile = "API_Investimentos.Application.xml";
     var applicationXmlPath = Path.Combine(AppContext.BaseDirectory, applicationXmlFile);
     if (File.Exists(applicationXmlPath))
@@ -113,7 +113,7 @@ builder.Services.AddSwaggerGen(c =>
         c.IncludeXmlComments(applicationXmlPath);
     }
 
-    // Configurar autenticação JWT no Swagger
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header usando o esquema Bearer. Insira apenas o token (sem 'Bearer ').",
@@ -140,7 +140,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// CORS (se necessário)
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -152,7 +152,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Inicializar banco de dados e seed
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -169,7 +169,7 @@ using (var scope = app.Services.CreateScope())
     }
 }
 
-// Configure the HTTP request pipeline
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -180,10 +180,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Middleware de tratamento de exceções
+
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-// Logging de requisições
+
 app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
@@ -209,5 +209,5 @@ finally
     Log.CloseAndFlush();
 }
 
-// Make the implicit Program class public so integration tests can access it
+
 public partial class Program { }

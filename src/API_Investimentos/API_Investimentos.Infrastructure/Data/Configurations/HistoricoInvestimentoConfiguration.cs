@@ -52,7 +52,7 @@ public class HistoricoInvestimentoConfiguration : IEntityTypeConfiguration<Histo
 
         builder.Property(hi => hi.DataResgate);
 
-        // Propriedades de auditoria
+
         builder.Property(hi => hi.CriadoEm)
             .IsRequired();
 
@@ -64,7 +64,7 @@ public class HistoricoInvestimentoConfiguration : IEntityTypeConfiguration<Histo
 
         builder.Property(hi => hi.ExcluidoEm);
 
-        // Índices
+
         builder.HasIndex(hi => hi.ClienteId)
             .HasDatabaseName("IX_HistoricoInvestimentos_ClienteId");
 

@@ -19,15 +19,15 @@ public class RabbitMQSettings
 /// </summary>
 public static class RabbitMQConstants
 {
-    // Exchanges
+
     public const string InvestimentosExchange = "investimentos.exchange";
 
-    // Queues
+
     public const string SimulacoesQueue = "simulacoes.queue";
     public const string ClientesQueue = "clientes.queue";
     public const string NotificacoesQueue = "notificacoes.queue";
 
-    // Routing Keys
+
     public const string SimulacaoRealizadaRoutingKey = "simulacao.realizada";
     public const string ClienteCriadoRoutingKey = "cliente.criado";
     public const string NotificacaoEmailRoutingKey = "notificacao.email";

@@ -15,7 +15,7 @@ public static class DbInitializer
     {
         try
         {
-            // Criar banco de dados se não existir
+
             await context.Database.MigrateAsync();
             logger.LogInformation("Iniciando seed do banco de dados...");
             
@@ -33,17 +33,17 @@ public static class DbInitializer
 
     public static async Task SeedProdutos(InvestimentosDbContext context, ILogger logger)
     {
-        // Verificar se já existem produtos
+
         if (await context.Produtos.AnyAsync())
         {
             logger.LogInformation("Banco de dados já contém produtos, seed ignorado.");
             return;
         }
 
-        // Criar produtos de exemplo
+
         var produtos = new List<Produto>
             {
-                // CDBs
+
                 new Produto(
                     nome: "CDB Banco XYZ 2026",
                     tipo: TipoProduto.CDB,
@@ -64,7 +64,7 @@ public static class DbInitializer
                     liquidezDiaria: false,
                     isentoIR: false),
 
-                // Tesouro Direto
+
                 new Produto(
                     nome: "Tesouro Selic 2027",
                     tipo: TipoProduto.TesouroSelic,
@@ -95,7 +95,7 @@ public static class DbInitializer
                     liquidezDiaria: false,
                     isentoIR: false),
 
-                // LCI/LCA
+
                 new Produto(
                     nome: "LCI Banco ABC",
                     tipo: TipoProduto.LCI,
@@ -116,7 +116,7 @@ public static class DbInitializer
                     liquidezDiaria: false,
                     isentoIR: true),
 
-                // Fundos
+
                 new Produto(
                     nome: "Fundo Renda Fixa Premium",
                     tipo: TipoProduto.Fundo,
@@ -138,12 +138,12 @@ public static class DbInitializer
                     isentoIR: false)
             };
 
-        // Configurar taxas de administração para fundos
+
         produtos[7].DefinirTaxaAdministracao(Percentual.CriarDePercentual(1.5m));
         produtos[8].DefinirTaxaAdministracao(Percentual.CriarDePercentual(2.0m));
         produtos[8].DefinirTaxaPerformance(Percentual.CriarDePercentual(20.0m));
 
-        // Adicionar produtos ao contexto
+
         await context.Produtos.AddRangeAsync(produtos);
         await context.SaveChangesAsync();
 
@@ -152,14 +152,14 @@ public static class DbInitializer
 
     public static async Task SeedClientes(InvestimentosDbContext context, ILogger logger)
     {
-        // Verificar se já existem clientes
+
         if (await context.Clientes.AnyAsync())
         {
             logger.LogInformation("Banco de dados já contém clientes, seed ignorado.");
             return;
         }
 
-        // Criar clientes de exemplo
+
         var clientes = new List<Cliente>
             {
                 new Cliente(
@@ -198,7 +198,7 @@ public static class DbInitializer
 
     public static async Task SeedPerfisRisco(InvestimentosDbContext context, ILogger logger, List<Cliente> clientes)
     {
-        // Carregar clientes se não fornecidos
+
         if (clientes == null)
         {
             clientes = await context.Clientes.ToListAsync();
@@ -210,14 +210,14 @@ public static class DbInitializer
             return;
         }
     
-        // Verificar se já existem perfis de risco
+
         if (await context.PerfisRisco.AnyAsync())
         {
             logger.LogInformation("Banco de dados já contém perfis de risco, seed ignorado.");
             return;
         }
 
-        // Criar perfis de risco para os clientes
+
         var perfisRisco = new List<PerfilRisco>
             {
                 new PerfilRisco(

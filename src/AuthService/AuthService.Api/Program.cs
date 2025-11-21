@@ -16,7 +16,7 @@ using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configurar Serilog
+
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -25,18 +25,18 @@ Log.Logger = new LoggerConfiguration()
 
 builder.Host.UseSerilog();
 
-// Configurar DbContext
+
 builder.Services.AddDbContext<AuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("AuthConnection")));
 
-// Configurar JWT
+
 var jwtSettings = builder.Configuration.GetSection(JwtSettings.SectionName);
 builder.Services.Configure<JwtSettings>(jwtSettings);
 
 var secret = jwtSettings["Secret"] ?? throw new InvalidOperationException("JWT Secret não configurado");
 var key = Encoding.UTF8.GetBytes(secret);
 
-// Desabilitar mapeamento automático de claims do JWT
+
 JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
 
 builder.Services.AddAuthentication(options =>
@@ -65,18 +65,18 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-// Configurar MediatR
+
 builder.Services.AddMediatR(cfg =>
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 
-// Configurar FluentValidation
+
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
-// Registrar serviços de infraestrutura
+
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-// Configurar Swagger/OpenAPI
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -87,7 +87,7 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Microsserviço de Autenticação e Autorização"
     });
 
-    // Configurar JWT no Swagger
+
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Description = "JWT Authorization header using the Bearer scheme. Enter 'Bearer' [space] and then your token",
@@ -115,10 +115,10 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-// Inicializar banco de dados e criar admin padrão
+
 await DbInitializer.InitializeAsync(app.Services);
 
-// Configurar pipeline HTTP
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -134,13 +134,13 @@ app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Mapear endpoints das Features
+
 app.MapLoginEndpoint();
 app.MapRegisterEndpoint();
 app.MapRefreshTokenEndpoint();
 app.MapGetCurrentUserEndpoint();
 
-// Health check endpoint
+
 app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Timestamp = DateTime.UtcNow }))
     .WithName("HealthCheck")
     .WithTags("Health")
@@ -148,5 +148,5 @@ app.MapGet("/health", () => Results.Ok(new { Status = "Healthy", Timestamp = Dat
 
 app.Run();
 
-// Necessário para testes de integração
+
 public partial class Program { }

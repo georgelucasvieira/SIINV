@@ -575,14 +575,14 @@ public class SimularInvestimentoCommandValidatorTests
     [InlineData(0)]    // Zero
     public void DeveInvalidar_QuandoValorInvestidoForInvalido(decimal valor)
     {
-        // Arrange
+
         var command = new SimularInvestimentoCommand { ValorInvestido = valor };
         var validator = new SimularInvestimentoCommandValidator();
 
-        // Act
+
         var result = validator.Validate(command);
 
-        // Assert
+
         result.IsValid.Should().BeFalse();
         result.Errors.Should().Contain(e =>
             e.PropertyName == nameof(command.ValorInvestido));
@@ -610,7 +610,7 @@ public class SimulacoesEndpointTests : IClassFixture<CustomWebApplicationFactory
     [Fact]
     public async Task DeveRetornar201_QuandoSimulacaoForValida()
     {
-        // Arrange
+
         var token = await GetAuthTokenAsync();
         _client.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", token);
@@ -623,10 +623,10 @@ public class SimulacoesEndpointTests : IClassFixture<CustomWebApplicationFactory
             tipoProduto = "CDB"
         };
 
-        // Act
+
         var response = await _client.PostAsJsonAsync("/api/v1/simulacoes", request);
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.Created);
         var result = await response.Content.ReadFromJsonAsync<SimulacaoResponse>();
         result.Should().NotBeNull();
@@ -665,7 +665,7 @@ Scenario: Cliente simula investimento com sucesso
 **Cenários**:
 
 ```javascript
-// load-test.js
+
 import http from 'k6/http';
 import { check, sleep } from 'k6';
 
@@ -780,7 +780,7 @@ reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coverage-report
 using var activity = ActivitySource.StartActivity("CalcularSimulacao");
 activity?.SetTag("produto.tipo", tipoProduto);
 activity?.SetTag("valor.investido", valorInvestido);
-// ... lógica ...
+
 activity?.SetStatus(ActivityStatusCode.Ok);
 ```
 
@@ -788,19 +788,19 @@ activity?.SetStatus(ActivityStatusCode.Ok);
 
 **Exemplos**:
 ```csharp
-// Contador
+
 private static readonly Counter<long> _simulacoesCounter =
     Meter.CreateCounter<long>("simulacoes.total");
 
 _simulacoesCounter.Add(1, new KeyValuePair<string, object>("tipo", tipoProduto));
 
-// Histogram (latência)
+
 private static readonly Histogram<double> _simulacaoDuration =
     Meter.CreateHistogram<double>("simulacao.duration", "ms");
 
 _simulacaoDuration.Record(stopwatch.ElapsedMilliseconds);
 
-// Gauge (itens na fila)
+
 private static readonly ObservableGauge<int> _queueDepth =
     Meter.CreateObservableGauge("rabbitmq.queue.depth", () => GetQueueDepth());
 ```

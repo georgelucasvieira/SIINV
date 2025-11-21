@@ -12,10 +12,10 @@ public class ProdutosControllerTests : BaseIntegrationTest
     [Fact]
     public async Task ListarProdutos_DeveRetornarListaDeProdutos()
     {
-        // Act
+
         var response = await Client.GetAsync("/api/v1/produtos");
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var produtos = await response.Content.ReadFromJsonAsync<List<ProdutoResponse>>();
@@ -26,11 +26,11 @@ public class ProdutosControllerTests : BaseIntegrationTest
     [Fact]
     public async Task ListarProdutos_DeveRetornarProdutosComPropriedadesCorretas()
     {
-        // Act
+
         var response = await Client.GetAsync("/api/v1/produtos");
         var produtos = await response.Content.ReadFromJsonAsync<List<ProdutoResponse>>();
 
-        // Assert
+
         produtos.Should().NotBeNull();
         produtos.Should().AllSatisfy(p =>
         {
@@ -48,14 +48,14 @@ public class ProdutosControllerTests : BaseIntegrationTest
     [Fact]
     public async Task ListarProdutos_ComTipoFiltro_DeveRetornarApenasProdutosDoTipo()
     {
-        // Arrange
+
         var tipo = "CDB";
 
-        // Act
+
         var response = await Client.GetAsync($"/api/v1/produtos?tipo={tipo}");
         var produtos = await response.Content.ReadFromJsonAsync<List<ProdutoResponse>>();
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         produtos.Should().NotBeNull();
         produtos.Should().AllSatisfy(p => p.Tipo.Should().Be(tipo));
@@ -64,14 +64,14 @@ public class ProdutosControllerTests : BaseIntegrationTest
     [Fact]
     public async Task ListarProdutos_ComRiscoFiltro_DeveRetornarApenasProdutosDoRisco()
     {
-        // Arrange
+
         var risco = "Baixo";
 
-        // Act
+
         var response = await Client.GetAsync($"/api/v1/produtos?risco={risco}");
         var produtos = await response.Content.ReadFromJsonAsync<List<ProdutoResponse>>();
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         produtos.Should().NotBeNull();
         produtos.Should().AllSatisfy(p => p.Risco.Should().Be(risco));
@@ -80,11 +80,11 @@ public class ProdutosControllerTests : BaseIntegrationTest
     [Fact]
     public async Task ListarProdutos_ComApenasAtivos_DeveRetornarApenasProdutosAtivos()
     {
-        // Act
+
         var response = await Client.GetAsync("/api/v1/produtos?apenasAtivos=true");
         var produtos = await response.Content.ReadFromJsonAsync<List<ProdutoResponse>>();
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         produtos.Should().NotBeNull();
         produtos.Should().AllSatisfy(p => p.Ativo.Should().BeTrue());
@@ -93,15 +93,15 @@ public class ProdutosControllerTests : BaseIntegrationTest
     [Fact]
     public async Task ObterProduto_ComIdValido_DeveRetornarProduto()
     {
-        // Arrange
+
         var listResponse = await Client.GetAsync("/api/v1/produtos");
         var produtos = await listResponse.Content.ReadFromJsonAsync<List<ProdutoResponse>>();
         var primeiroId = produtos!.First().Id;
 
-        // Act
+
         var response = await Client.GetAsync($"/api/v1/produtos/{primeiroId}");
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var produto = await response.Content.ReadFromJsonAsync<ProdutoResponse>();
@@ -112,24 +112,24 @@ public class ProdutosControllerTests : BaseIntegrationTest
     [Fact]
     public async Task ObterProduto_ComIdInvalido_DeveRetornarNotFound()
     {
-        // Arrange
+
         var idInexistente = 99999;
 
-        // Act
+
         var response = await Client.GetAsync($"/api/v1/produtos/{idInexistente}");
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
     public async Task ListarProdutos_DeveRetornarProdutosOrdenadosPorNome()
     {
-        // Act
+
         var response = await Client.GetAsync("/api/v1/produtos");
         var produtos = await response.Content.ReadFromJsonAsync<List<ProdutoResponse>>();
 
-        // Assert
+
         produtos.Should().NotBeNull();
         produtos.Should().BeInAscendingOrder(p => p.Nome);
     }
@@ -141,11 +141,11 @@ public class ProdutosControllerTests : BaseIntegrationTest
     [InlineData("TesouroSelic")]
     public async Task ListarProdutos_ComDiferentesTipos_DeveRetornarProdutosCorretos(string tipo)
     {
-        // Act
+
         var response = await Client.GetAsync($"/api/v1/produtos?tipo={tipo}");
         var produtos = await response.Content.ReadFromJsonAsync<List<ProdutoResponse>>();
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         produtos.Should().NotBeNull();
 
@@ -162,11 +162,11 @@ public class ProdutosControllerTests : BaseIntegrationTest
     [InlineData("Alto")]
     public async Task ListarProdutos_ComDiferentesRiscos_DeveRetornarProdutosCorretos(string risco)
     {
-        // Act
+
         var response = await Client.GetAsync($"/api/v1/produtos?risco={risco}");
         var produtos = await response.Content.ReadFromJsonAsync<List<ProdutoResponse>>();
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         produtos.Should().NotBeNull();
 

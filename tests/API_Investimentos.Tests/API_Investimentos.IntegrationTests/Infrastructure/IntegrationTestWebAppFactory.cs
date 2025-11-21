@@ -24,16 +24,16 @@ public class IntegrationTestWebAppFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureTestServices(services =>
         {
-            // Remover o DbContext existente
+
             services.RemoveAll(typeof(DbContextOptions<InvestimentosDbContext>));
 
-            // Adicionar DbContext com SQL Server de teste
+
             services.AddDbContext<InvestimentosDbContext>(options =>
             {
                 options.UseSqlServer(_connectionString);
             });
 
-            // Criar banco de dados e aplicar migrations
+
             var serviceProvider = services.BuildServiceProvider();
             using var scope = serviceProvider.CreateScope();
             var dbContext = scope.ServiceProvider.GetRequiredService<InvestimentosDbContext>();

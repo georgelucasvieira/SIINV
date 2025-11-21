@@ -34,13 +34,13 @@ public class SimularInvestimentoCommandHandler : IRequestHandler<SimularInvestim
         SimularInvestimentoCommand request,
         CancellationToken cancellationToken)
     {
-        // 1. Validar e converter tipo de produto
+
         if (!Enum.TryParse<TipoProduto>(request.TipoProduto, true, out var tipoProduto))
         {
             return Result<SimulacaoResponse>.Falha($"Tipo de produto inválido: {request.TipoProduto}");
         }
 
-        // 2. Buscar produtos do tipo solicitado que estão ativos
+
         var produtos = await _unitOfWork.Produtos.ObterPorTipoAsync(tipoProduto, cancellationToken);
         var produtosAtivos = produtos.Where(p => p.Ativo).ToList();
 
@@ -49,10 +49,10 @@ public class SimularInvestimentoCommandHandler : IRequestHandler<SimularInvestim
             return Result<SimulacaoResponse>.Falha($"Nenhum produto do tipo {request.TipoProduto} disponível");
         }
 
-        // 3. Criar value objects
+
         var valorInvestido = Dinheiro.Criar(request.Valor);
 
-        // 4. Filtrar produtos adequados ao valor e prazo
+
         var produtoAdequado = produtosAtivos.FirstOrDefault(p =>
             p.PodeInvestir(valorInvestido, request.PrazoMeses));
 
@@ -62,13 +62,13 @@ public class SimularInvestimentoCommandHandler : IRequestHandler<SimularInvestim
                 $"Nenhum produto adequado encontrado. Valor mínimo ou prazo não atendem aos requisitos.");
         }
 
-        // 5. Calcular simulação
+
         var resultadoCalculo = _calculadora.Calcular(
             produtoAdequado,
             valorInvestido,
             request.PrazoMeses);
 
-        // 6. Criar entidade de simulação
+
         var simulacao = new Domain.Entities.Simulacao(
             request.ClienteId,
             produtoAdequado.Id,
@@ -81,11 +81,11 @@ public class SimularInvestimentoCommandHandler : IRequestHandler<SimularInvestim
             resultadoCalculo.TaxaRentabilidadeEfetiva,
             resultadoCalculo.AliquotaIR);
 
-        // 7. Persistir simulação
+
         await _unitOfWork.Simulacoes.AdicionarAsync(simulacao, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        // 8. Publicar evento de simulação realizada
+
         var evento = new SimulacaoRealizadaEvent
         {
             SimulacaoId = simulacao.Id,
@@ -108,7 +108,7 @@ public class SimularInvestimentoCommandHandler : IRequestHandler<SimularInvestim
             RabbitMQConstants.SimulacaoRealizadaRoutingKey,
             cancellationToken);
 
-        // 9. Montar response
+
         var response = new SimulacaoResponse
         {
             Id = simulacao.Id,

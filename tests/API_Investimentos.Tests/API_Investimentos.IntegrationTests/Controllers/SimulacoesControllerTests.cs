@@ -13,7 +13,7 @@ public class SimulacoesControllerTests : BaseIntegrationTest
     [Fact]
     public async Task SimularInvestimento_ComDadosValidos_DeveRetornarSimulacao()
     {
-        // Arrange
+
         var request = new SimularInvestimentoRequest
         {
             ClienteId = 1,
@@ -22,10 +22,10 @@ public class SimulacoesControllerTests : BaseIntegrationTest
             TipoProduto = "CDB"
         };
 
-        // Act
+
         var response = await Client.PostAsJsonAsync("/api/v1/simulacoes/simular", request);
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var resultado = await response.Content.ReadFromJsonAsync<SimulacaoResponse>();
@@ -40,7 +40,7 @@ public class SimulacoesControllerTests : BaseIntegrationTest
     [Fact]
     public async Task SimularInvestimento_ComValorNegativo_DeveRetornarBadRequest()
     {
-        // Arrange
+
         var request = new SimularInvestimentoRequest
         {
             ClienteId = 1,
@@ -49,17 +49,17 @@ public class SimulacoesControllerTests : BaseIntegrationTest
             TipoProduto = "CDB"
         };
 
-        // Act
+
         var response = await Client.PostAsJsonAsync("/api/v1/simulacoes/simular", request);
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task SimularInvestimento_ComPrazoZero_DeveRetornarBadRequest()
     {
-        // Arrange
+
         var request = new SimularInvestimentoRequest
         {
             ClienteId = 1,
@@ -68,17 +68,17 @@ public class SimulacoesControllerTests : BaseIntegrationTest
             TipoProduto = "CDB"
         };
 
-        // Act
+
         var response = await Client.PostAsJsonAsync("/api/v1/simulacoes/simular", request);
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
     public async Task SimularInvestimento_DeveCalcularImpostoCorretamente()
     {
-        // Arrange
+
         var request = new SimularInvestimentoRequest
         {
             ClienteId = 1,
@@ -87,11 +87,11 @@ public class SimulacoesControllerTests : BaseIntegrationTest
             TipoProduto = "CDB"
         };
 
-        // Act
+
         var response = await Client.PostAsJsonAsync("/api/v1/simulacoes/simular", request);
         var resultado = await response.Content.ReadFromJsonAsync<SimulacaoResponse>();
 
-        // Assert
+
         resultado.Should().NotBeNull();
         resultado!.ResultadoSimulacao.ValorIR.Should().BeGreaterThanOrEqualTo(0);
         resultado.ResultadoSimulacao.ValorFinalLiquido.Should().Be(
@@ -106,7 +106,7 @@ public class SimulacoesControllerTests : BaseIntegrationTest
     [InlineData(36)]
     public async Task SimularInvestimento_ComDiferentesPrazos_DeveCalcularCorretamente(int prazoMeses)
     {
-        // Arrange
+
         var request = new SimularInvestimentoRequest
         {
             ClienteId = 1,
@@ -115,10 +115,10 @@ public class SimulacoesControllerTests : BaseIntegrationTest
             TipoProduto = "CDB"
         };
 
-        // Act
+
         var response = await Client.PostAsJsonAsync("/api/v1/simulacoes/simular", request);
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var resultado = await response.Content.ReadFromJsonAsync<SimulacaoResponse>();
@@ -133,7 +133,7 @@ public class SimulacoesControllerTests : BaseIntegrationTest
     [InlineData("TesouroSelic")]
     public async Task SimularInvestimento_ComDiferentesTiposProduto_DeveRetornarSimulacao(string tipoProduto)
     {
-        // Arrange
+
         var request = new SimularInvestimentoRequest
         {
             ClienteId = 1,
@@ -142,10 +142,10 @@ public class SimulacoesControllerTests : BaseIntegrationTest
             TipoProduto = tipoProduto
         };
 
-        // Act
+
         var response = await Client.PostAsJsonAsync("/api/v1/simulacoes/simular", request);
 
-        // Assert
+
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         var resultado = await response.Content.ReadFromJsonAsync<SimulacaoResponse>();
@@ -158,7 +158,7 @@ public class SimulacoesControllerTests : BaseIntegrationTest
     [Fact]
     public async Task SimularInvestimento_ProdutoIsentoIR_DeveRetornarImpostoZero()
     {
-        // Arrange - LCI é isento de IR
+
         var request = new SimularInvestimentoRequest
         {
             ClienteId = 1,
@@ -167,11 +167,11 @@ public class SimulacoesControllerTests : BaseIntegrationTest
             TipoProduto = "LCI"
         };
 
-        // Act
+
         var response = await Client.PostAsJsonAsync("/api/v1/simulacoes/simular", request);
         var resultado = await response.Content.ReadFromJsonAsync<SimulacaoResponse>();
 
-        // Assert
+
         resultado.Should().NotBeNull();
         resultado!.ResultadoSimulacao.ValorIR.Should().Be(0);
         resultado.ResultadoSimulacao.ValorFinalLiquido.Should().Be(resultado.ResultadoSimulacao.ValorFinalBruto);
@@ -180,7 +180,7 @@ public class SimulacoesControllerTests : BaseIntegrationTest
     [Fact]
     public async Task SimularInvestimento_DevePersistirSimulacaoNoBanco()
     {
-        // Arrange
+
         var request = new SimularInvestimentoRequest
         {
             ClienteId = 1,
@@ -189,11 +189,11 @@ public class SimulacoesControllerTests : BaseIntegrationTest
             TipoProduto = "CDB"
         };
 
-        // Act
+
         var response = await Client.PostAsJsonAsync("/api/v1/simulacoes/simular", request);
         var resultado = await response.Content.ReadFromJsonAsync<SimulacaoResponse>();
 
-        // Assert
+
         using var dbContext = GetDbContext();
         var simulacaoNoBanco = await dbContext.Simulacoes.FindAsync(resultado!.Id);
 

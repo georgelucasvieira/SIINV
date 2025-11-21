@@ -36,7 +36,7 @@ public class ProdutoConfiguration : IEntityTypeConfiguration<Produto>
             .HasConversion<string>()
             .HasMaxLength(50);
 
-        // Configuração do Value Object TaxaRentabilidade
+
         builder.Property(p => p.TaxaRentabilidade)
             .HasConversion(
                 v => v.Valor,
@@ -45,7 +45,7 @@ public class ProdutoConfiguration : IEntityTypeConfiguration<Produto>
             .HasColumnName("TaxaRentabilidade")
             .IsRequired();
 
-        // Configuração do Value Object ValorMinimo
+
         builder.Property(p => p.ValorMinimo)
             .HasConversion(
                 v => v.Valor,
@@ -66,7 +66,7 @@ public class ProdutoConfiguration : IEntityTypeConfiguration<Produto>
             .IsRequired()
             .HasDefaultValue(true);
 
-        // Configuração do Value Object TaxaAdministracao (nullable)
+
         builder.Property(p => p.TaxaAdministracao)
             .HasConversion(
                 v => v != null ? v.Valor : (decimal?)null,
@@ -74,7 +74,7 @@ public class ProdutoConfiguration : IEntityTypeConfiguration<Produto>
             .HasColumnType("decimal(10,6)")
             .HasColumnName("TaxaAdministracao");
 
-        // Configuração do Value Object TaxaPerformance (nullable)
+
         builder.Property(p => p.TaxaPerformance)
             .HasConversion(
                 v => v != null ? v.Valor : (decimal?)null,
@@ -86,7 +86,7 @@ public class ProdutoConfiguration : IEntityTypeConfiguration<Produto>
             .IsRequired()
             .HasDefaultValue(false);
 
-        // Propriedades de auditoria
+
         builder.Property(p => p.CriadoEm)
             .IsRequired();
 
@@ -98,7 +98,7 @@ public class ProdutoConfiguration : IEntityTypeConfiguration<Produto>
 
         builder.Property(p => p.ExcluidoEm);
 
-        // Índices
+
         builder.HasIndex(p => p.Nome)
             .HasDatabaseName("IX_Produtos_Nome");
 

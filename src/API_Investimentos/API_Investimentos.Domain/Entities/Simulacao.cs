@@ -84,7 +84,7 @@ public class Simulacao : BaseEntity, IAuditavel
     /// </summary>
     public long? AtualizadoPorId { get; private set; }
 
-    // Construtor privado para EF Core
+
     private Simulacao()
     {
         ValorInvestido = Dinheiro.Zero;

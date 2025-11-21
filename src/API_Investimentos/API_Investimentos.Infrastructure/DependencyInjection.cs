@@ -19,23 +19,23 @@ public static class DependencyInjection
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        // DbContext
+
         services.AddDbContext<InvestimentosDbContext>(options =>
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection"),
                 b => b.MigrationsAssembly(typeof(InvestimentosDbContext).Assembly.FullName)));
 
-        // Repositórios
+
         services.AddScoped<IRepositorioProduto, RepositorioProduto>();
         services.AddScoped<IRepositorioSimulacao, RepositorioSimulacao>();
         services.AddScoped<IRepositorioPerfilRisco, RepositorioPerfilRisco>();
         services.AddScoped<IRepositorioHistoricoInvestimento, RepositorioHistoricoInvestimento>();
         services.AddScoped<IRepositorioCliente, RepositorioCliente>();
 
-        // Unit of Work
+
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        // RabbitMQ (apenas Publisher - Consumer está no Worker_Simulacao)
+
         services.Configure<RabbitMQSettings>(configuration.GetSection("RabbitMQ"));
         services.AddSingleton<IMessagePublisher, RabbitMQPublisher>();
 

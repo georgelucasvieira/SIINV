@@ -21,13 +21,13 @@ public class CadastrarClienteCommandHandler : IRequestHandler<CadastrarClienteCo
         CadastrarClienteCommand request,
         CancellationToken cancellationToken)
     {
-        // Verificar se já existe um cliente com o mesmo CPF
+
         if (await _unitOfWork.Clientes.ExisteCpfAsync(request.Cpf, cancellationToken))
         {
             return Result<ClienteResponse>.Falha("Já existe um cliente cadastrado com este CPF");
         }
 
-        // Criar novo cliente
+
         var cliente = new Domain.Entities.Cliente(
             request.Nome,
             request.Cpf,

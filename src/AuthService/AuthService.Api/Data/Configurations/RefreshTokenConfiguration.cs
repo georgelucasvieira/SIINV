@@ -25,7 +25,7 @@ public class RefreshTokenConfiguration : IEntityTypeConfiguration<RefreshToken>
         builder.Property(rt => rt.UsuarioId)
             .IsRequired();
 
-        // Índice único para garantir 1 refresh token por usuário
+
         builder.HasIndex(rt => rt.UsuarioId)
             .IsUnique();
 

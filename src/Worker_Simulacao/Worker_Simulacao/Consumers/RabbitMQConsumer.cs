@@ -36,7 +36,7 @@ public class RabbitMQConsumer : IDisposable
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
-        // Configurar prefetch para processar uma mensagem por vez
+
         _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
 
         _logger.LogInformation("RabbitMQ Consumer inicializado com sucesso");
@@ -44,7 +44,7 @@ public class RabbitMQConsumer : IDisposable
 
     public Task ConsumeAsync<T>(string queueName, Func<T, Task> handler, CancellationToken cancellationToken = default) where T : class
     {
-        // Declarar a fila (será criada se não existir)
+
         _channel.QueueDeclare(
             queue: queueName,
             durable: true,
@@ -83,7 +83,7 @@ public class RabbitMQConsumer : IDisposable
             {
                 _logger.LogError(ex, "Erro ao processar mensagem da fila {QueueName}", queueName);
 
-                // Requeue a mensagem em caso de erro
+
                 _channel.BasicNack(ea.DeliveryTag, false, true);
             }
         };
@@ -95,7 +95,7 @@ public class RabbitMQConsumer : IDisposable
 
         _logger.LogInformation("Consumidor iniciado para fila {QueueName}", queueName);
 
-        // Mantém o consumidor rodando até o cancelamento
+
         cancellationToken.Register(() =>
         {
             _logger.LogInformation("Cancelando consumidor da fila {QueueName}", queueName);

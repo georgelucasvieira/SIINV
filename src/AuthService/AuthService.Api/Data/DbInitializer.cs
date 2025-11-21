@@ -18,16 +18,16 @@ public static class DbInitializer
         var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
         var environment = scope.ServiceProvider.GetRequiredService<IHostEnvironment>();
 
-        // Aplicar migrations pendentes
+
         await context.Database.MigrateAsync();
 
-        // Verificar se já existe algum usuário admin
+
         var adminExists = await context.Usuarios
             .AnyAsync(u => u.Role == Roles.Admin);
 
         if (!adminExists)
         {
-            // Obter credenciais do admin
+
             var adminEmail = Environment.GetEnvironmentVariable("ADMIN_EMAIL")
                 ?? configuration["AdminSettings:Email"];
             var adminPassword = Environment.GetEnvironmentVariable("ADMIN_PASSWORD")
@@ -36,7 +36,7 @@ public static class DbInitializer
                 ?? configuration["AdminSettings:Name"]
                 ?? "Administrador";
 
-            // Em produção, exigir variáveis de ambiente
+
             if (!environment.IsDevelopment())
             {
                 if (string.IsNullOrEmpty(adminEmail) || string.IsNullOrEmpty(adminPassword))
@@ -49,7 +49,7 @@ public static class DbInitializer
             }
             else
             {
-                // Em desenvolvimento, usar valores padrão se não configurados
+
                 adminEmail ??= "admin@investimentos.com";
                 adminPassword ??= "Admin@123";
             }

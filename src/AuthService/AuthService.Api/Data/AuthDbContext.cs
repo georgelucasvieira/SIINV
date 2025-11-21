@@ -20,7 +20,7 @@ public class AuthDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Aplicar todas as configurações do assembly
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AuthDbContext).Assembly);
     }
 

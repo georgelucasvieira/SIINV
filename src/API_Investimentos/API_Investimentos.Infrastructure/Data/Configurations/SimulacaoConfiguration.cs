@@ -25,13 +25,13 @@ public class SimulacaoConfiguration : IEntityTypeConfiguration<Simulacao>
         builder.Property(s => s.ProdutoId)
             .IsRequired();
 
-        // Relacionamento com Produto
+
         builder.HasOne(s => s.Produto)
             .WithMany()
             .HasForeignKey(s => s.ProdutoId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        // Value Objects
+
         builder.Property(s => s.ValorInvestido)
             .HasConversion(
                 v => v.Valor,
@@ -88,7 +88,7 @@ public class SimulacaoConfiguration : IEntityTypeConfiguration<Simulacao>
         builder.Property(s => s.Observacoes)
             .HasMaxLength(500);
 
-        // Propriedades de auditoria
+
         builder.Property(s => s.CriadoPorId);
 
         builder.Property(s => s.AtualizadoPorId);
@@ -104,7 +104,7 @@ public class SimulacaoConfiguration : IEntityTypeConfiguration<Simulacao>
 
         builder.Property(s => s.ExcluidoEm);
 
-        // Índices
+
         builder.HasIndex(s => s.ClienteId)
             .HasDatabaseName("IX_Simulacoes_ClienteId");
 

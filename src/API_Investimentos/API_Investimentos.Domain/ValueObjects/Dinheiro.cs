@@ -33,7 +33,7 @@ public sealed class Dinheiro : IEquatable<Dinheiro>, IComparable<Dinheiro>
 
     public static Dinheiro Zero => new Dinheiro(0);
 
-    // Operadores
+
     public static Dinheiro operator +(Dinheiro a, Dinheiro b) => new Dinheiro(a.Valor + b.Valor);
     public static Dinheiro operator -(Dinheiro a, Dinheiro b) => new Dinheiro(a.Valor - b.Valor);
     public static Dinheiro operator *(Dinheiro a, decimal multiplicador) => new Dinheiro(a.Valor * multiplicador);
@@ -43,10 +43,10 @@ public sealed class Dinheiro : IEquatable<Dinheiro>, IComparable<Dinheiro>
     public static bool operator >=(Dinheiro a, Dinheiro b) => a.Valor >= b.Valor;
     public static bool operator <=(Dinheiro a, Dinheiro b) => a.Valor <= b.Valor;
 
-    // Conversões implícitas
+
     public static implicit operator decimal(Dinheiro dinheiro) => dinheiro.Valor;
 
-    // IEquatable
+
     public bool Equals(Dinheiro? other)
     {
         if (other is null) return false;
@@ -65,7 +65,7 @@ public sealed class Dinheiro : IEquatable<Dinheiro>, IComparable<Dinheiro>
 
     public static bool operator !=(Dinheiro? left, Dinheiro? right) => !(left == right);
 
-    // IComparable
+
     public int CompareTo(Dinheiro? other)
     {
         if (other is null) return 1;

@@ -22,7 +22,7 @@ public class Cliente : BaseEntity
     /// </summary>
     public string Telefone { get; private set; }
 
-    // Construtor privado para EF Core
+
     private Cliente()
     {
         Nome = string.Empty;

@@ -21,14 +21,14 @@ public class CadastrarPerfilRiscoCommandHandler : IRequestHandler<CadastrarPerfi
         CadastrarPerfilRiscoCommand request,
         CancellationToken cancellationToken)
     {
-        // Verificar se já existe um perfil para este cliente
+
         var perfilExistente = await _unitOfWork.PerfisRisco.ObterPorClienteAsync(
             request.ClienteId,
             cancellationToken);
 
         if (perfilExistente != null)
         {
-            // Atualizar perfil existente
+
             perfilExistente.AtualizarPontuacao(request.Pontuacao, request.FatoresCalculo);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 
@@ -45,7 +45,7 @@ public class CadastrarPerfilRiscoCommandHandler : IRequestHandler<CadastrarPerfi
             return Result<PerfilRiscoResponse>.Ok(responseAtualizado, "Perfil de risco atualizado com sucesso");
         }
 
-        // Criar novo perfil
+
         var novoPerfil = new Domain.Entities.PerfilRisco(
             request.ClienteId,
             request.Pontuacao,

@@ -15,7 +15,7 @@ public class CalculadoraInvestimentos : ICalculadoraInvestimentos
         var dataVencimento = DateTime.UtcNow.AddMonths(prazoMeses);
         var prazoAnos = prazoMeses / 12.0m;
 
-        // Calcular valor final bruto baseado no tipo de produto
+
         var valorFinalBruto = produto.Tipo switch
         {
             TipoProduto.CDB => CalcularCDB(valorInvestido, produto.TaxaRentabilidade, prazoAnos),
@@ -28,7 +28,7 @@ public class CalculadoraInvestimentos : ICalculadoraInvestimentos
             _ => throw new InvalidOperationException($"Tipo de produto não suportado: {produto.Tipo}")
         };
 
-        // Aplicar taxa de administração e performance para fundos
+
         if (produto.Tipo == TipoProduto.Fundo && produto.TaxaPerformance != null)
         {
             var rendimento = valorFinalBruto - valorInvestido;
@@ -36,7 +36,7 @@ public class CalculadoraInvestimentos : ICalculadoraInvestimentos
             valorFinalBruto = valorFinalBruto - taxaPerformance;
         }
 
-        // Calcular IR (se não for isento)
+
         Dinheiro valorIR;
         Percentual aliquotaIR;
 

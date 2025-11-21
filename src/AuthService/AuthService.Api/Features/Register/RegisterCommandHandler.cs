@@ -48,13 +48,13 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, AuthRespo
 
         usuario.RegistrarLogin();
 
-        // Gerar tokens
+
         var token = _jwtService.GerarToken(usuario);
         var refreshTokenValue = _jwtService.GerarRefreshToken();
         var expiraEm = DateTime.UtcNow.AddMinutes(_jwtSettings.ExpiracaoMinutos);
         var refreshExpiraEm = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpiracaoDias);
 
-        // Buscar ou criar refresh token (1 por usuário)
+
         var refreshToken = await _context.RefreshTokens
             .FirstOrDefaultAsync(rt => rt.UsuarioId == usuario.Id, cancellationToken);
 

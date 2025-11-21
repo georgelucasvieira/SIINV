@@ -34,17 +34,17 @@ public class Worker : BackgroundService
                         message.ClienteId,
                         message.ValorInvestido);
 
-                    // Aqui você pode adicionar lógica adicional como:
-                    // - Enviar notificação por email
-                    // - Atualizar estatísticas
-                    // - Registrar em um sistema de analytics
-                    // - Notificar outros serviços
+
+
+
+
+
 
                     await Task.CompletedTask;
                 },
                 stoppingToken);
 
-            // Mantém o serviço rodando
+
             while (!stoppingToken.IsCancellationRequested)
             {
                 await Task.Delay(1000, stoppingToken);

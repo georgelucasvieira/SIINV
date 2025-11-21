@@ -14,16 +14,16 @@ public static class DependencyInjection
     {
         var assembly = Assembly.GetExecutingAssembly();
 
-        // MediatR
+
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(assembly));
 
-        // FluentValidation
+
         services.AddValidatorsFromAssembly(assembly);
 
-        // AutoMapper
+
         services.AddAutoMapper(assembly);
 
-        // Services
+
         services.AddScoped<ICalculadoraInvestimentos, CalculadoraInvestimentos>();
 
         return services;

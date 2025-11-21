@@ -32,7 +32,7 @@ public class RepositorioProduto : RepositorioBase<Produto>, IRepositorioProduto
 
     public async Task<IEnumerable<Produto>> ObterPorPerfilAsync(PerfilInvestidor perfil, CancellationToken cancellationToken = default)
     {
-        // Mapear perfil de investidor para níveis de risco aceitos
+
         var niveisRiscoAceitos = perfil switch
         {
             PerfilInvestidor.Conservador => new[] { NivelRisco.MuitoBaixo, NivelRisco.Baixo },

@@ -36,14 +36,14 @@ public class RabbitMQPublisher : IMessagePublisher, IDisposable
         _connection = factory.CreateConnection();
         _channel = _connection.CreateModel();
 
-        // Declarar exchange principal
+
         _channel.ExchangeDeclare(
             exchange: RabbitMQConstants.InvestimentosExchange,
             type: ExchangeType.Topic,
             durable: true,
             autoDelete: false);
 
-        // Declarar filas
+
         DeclareQueue(RabbitMQConstants.SimulacoesQueue, RabbitMQConstants.SimulacaoRealizadaRoutingKey);
         DeclareQueue(RabbitMQConstants.ClientesQueue, RabbitMQConstants.ClienteCriadoRoutingKey);
         DeclareQueue(RabbitMQConstants.NotificacoesQueue, RabbitMQConstants.NotificacaoEmailRoutingKey);

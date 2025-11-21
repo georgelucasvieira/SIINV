@@ -11,7 +11,7 @@ public class ProdutoTests
     [Fact]
     public void Construtor_ComParametrosValidos_DeveCriarProduto()
     {
-        // Arrange & Act
+
         var produto = new Produto(
             nome: "CDB Teste",
             tipo: TipoProduto.CDB,
@@ -23,7 +23,7 @@ public class ProdutoTests
             isentoIR: false
         );
 
-        // Assert
+
         produto.Nome.Should().Be("CDB Teste");
         produto.Tipo.Should().Be(TipoProduto.CDB);
         produto.NivelRisco.Should().Be(NivelRisco.Baixo);
@@ -38,118 +38,118 @@ public class ProdutoTests
     [Fact]
     public void PodeInvestir_ComValorAcimaDoMinimo_DeveRetornarTrue()
     {
-        // Arrange
+
         var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
         var valorInvestimento = Dinheiro.Criar(1500m);
         var prazoMeses = 12;
 
-        // Act
+
         var resultado = produto.PodeInvestir(valorInvestimento, prazoMeses);
 
-        // Assert
+
         resultado.Should().BeTrue();
     }
 
     [Fact]
     public void PodeInvestir_ComValorIgualAoMinimo_DeveRetornarTrue()
     {
-        // Arrange
+
         var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
         var valorInvestimento = Dinheiro.Criar(1000m);
         var prazoMeses = 12;
 
-        // Act
+
         var resultado = produto.PodeInvestir(valorInvestimento, prazoMeses);
 
-        // Assert
+
         resultado.Should().BeTrue();
     }
 
     [Fact]
     public void PodeInvestir_ComValorAbaixoDoMinimo_DeveRetornarFalse()
     {
-        // Arrange
+
         var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
         var valorInvestimento = Dinheiro.Criar(500m);
         var prazoMeses = 12;
 
-        // Act
+
         var resultado = produto.PodeInvestir(valorInvestimento, prazoMeses);
 
-        // Assert
+
         resultado.Should().BeFalse();
     }
 
     [Fact]
     public void PodeInvestir_ComProdutoInativo_DeveRetornarFalse()
     {
-        // Arrange
+
         var produto = CriarProdutoTeste(valorMinimo: Dinheiro.Criar(1000m));
         produto.Desativar();
         var valorInvestimento = Dinheiro.Criar(1500m);
         var prazoMeses = 12;
 
-        // Act
+
         var resultado = produto.PodeInvestir(valorInvestimento, prazoMeses);
 
-        // Assert
+
         resultado.Should().BeFalse();
     }
 
     [Fact]
     public void DefinirTaxaAdministracao_ComValorValido_DeveDefinirTaxa()
     {
-        // Arrange
+
         var produto = CriarProdutoTeste(tipo: TipoProduto.Fundo);
         var taxa = Percentual.CriarDePercentual(2m);
 
-        // Act
+
         produto.DefinirTaxaAdministracao(taxa);
 
-        // Assert
+
         produto.TaxaAdministracao.Should().Be(taxa);
     }
 
     [Fact]
     public void DefinirTaxaPerformance_ComValorValido_DeveDefinirTaxa()
     {
-        // Arrange
+
         var produto = CriarProdutoTeste(tipo: TipoProduto.Fundo);
         var taxa = Percentual.CriarDePercentual(20m);
 
-        // Act
+
         produto.DefinirTaxaPerformance(taxa);
 
-        // Assert
+
         produto.TaxaPerformance.Should().Be(taxa);
     }
 
     [Fact]
     public void Desativar_DeveMarcarProdutoComoInativo()
     {
-        // Arrange
+
         var produto = CriarProdutoTeste();
         produto.Ativo.Should().BeTrue();
 
-        // Act
+
         produto.Desativar();
 
-        // Assert
+
         produto.Ativo.Should().BeFalse();
     }
 
     [Fact]
     public void Ativar_DeveMarcarProdutoComoAtivo()
     {
-        // Arrange
+
         var produto = CriarProdutoTeste();
         produto.Desativar();
         produto.Ativo.Should().BeFalse();
 
-        // Act
+
         produto.Ativar();
 
-        // Assert
+
         produto.Ativo.Should().BeTrue();
     }
 
@@ -160,7 +160,7 @@ public class ProdutoTests
     [InlineData(TipoProduto.LCA)]
     public void Construtor_ComDiferentesTipos_DeveCriarProdutoCorretamente(TipoProduto tipo)
     {
-        // Act
+
         var produto = new Produto(
             nome: $"Produto {tipo}",
             tipo: tipo,
@@ -172,7 +172,7 @@ public class ProdutoTests
             isentoIR: false
         );
 
-        // Assert
+
         produto.Tipo.Should().Be(tipo);
     }
 
@@ -184,17 +184,17 @@ public class ProdutoTests
     [InlineData(NivelRisco.MuitoAlto)]
     public void Construtor_ComDiferentesNiveisRisco_DeveCriarProdutoCorretamente(NivelRisco nivelRisco)
     {
-        // Act
+
         var produto = CriarProdutoTeste(nivelRisco: nivelRisco);
 
-        // Assert
+
         produto.NivelRisco.Should().Be(nivelRisco);
     }
 
     [Fact]
     public void ProdutoLCI_DeveSerIsentoIR()
     {
-        // Act
+
         var produto = new Produto(
             nome: "LCI Teste",
             tipo: TipoProduto.LCI,
@@ -206,14 +206,14 @@ public class ProdutoTests
             isentoIR: true
         );
 
-        // Assert
+
         produto.IsentoIR.Should().BeTrue();
     }
 
     [Fact]
     public void ProdutoLCA_DeveSerIsentoIR()
     {
-        // Act
+
         var produto = new Produto(
             nome: "LCA Teste",
             tipo: TipoProduto.LCA,
@@ -225,7 +225,7 @@ public class ProdutoTests
             isentoIR: true
         );
 
-        // Assert
+
         produto.IsentoIR.Should().BeTrue();
     }
 

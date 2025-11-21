@@ -52,8 +52,8 @@ public class RepositorioSimulacao : RepositorioBase<Simulacao>, IRepositorioSimu
         if (dataFim.HasValue)
             query = query.Where(s => s.CriadoEm <= dataFim.Value);
 
-        // Carregar dados para memória e fazer agregação no cliente
-        // devido à limitação do EF com Value Objects em funções de agregação
+
+
         var dados = await query
             .Select(s => new
             {

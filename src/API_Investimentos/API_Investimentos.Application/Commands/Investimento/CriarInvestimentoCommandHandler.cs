@@ -22,7 +22,7 @@ public class CriarInvestimentoCommandHandler : IRequestHandler<CriarInvestimento
         CriarInvestimentoCommand request,
         CancellationToken cancellationToken)
     {
-        // Buscar a simulação
+
         var simulacao = await _unitOfWork.Simulacoes.ObterPorIdAsync(request.SimulacaoId, cancellationToken);
 
         if (simulacao == null)
@@ -35,7 +35,7 @@ public class CriarInvestimentoCommandHandler : IRequestHandler<CriarInvestimento
             return Result<InvestimentoResponse>.Falha("Simulação não pertence ao cliente informado");
         }
 
-        // Buscar o produto para obter o tipo
+
         var produto = await _unitOfWork.Produtos.ObterPorIdAsync(simulacao.ProdutoId, cancellationToken);
 
         if (produto == null)
@@ -43,7 +43,7 @@ public class CriarInvestimentoCommandHandler : IRequestHandler<CriarInvestimento
             return Result<InvestimentoResponse>.Falha("Produto da simulação não encontrado");
         }
 
-        // Criar o investimento
+
         var investimento = new HistoricoInvestimento(
             clienteId: request.ClienteId,
             tipoProduto: produto.Tipo,

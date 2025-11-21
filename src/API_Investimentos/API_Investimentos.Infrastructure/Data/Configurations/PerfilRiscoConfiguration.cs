@@ -39,7 +39,7 @@ public class PerfilRiscoConfiguration : IEntityTypeConfiguration<PerfilRisco>
         builder.Property(pr => pr.DataProximaAvaliacao)
             .IsRequired();
 
-        // Propriedades de auditoria
+
         builder.Property(pr => pr.CriadoEm)
             .IsRequired();
 
@@ -51,7 +51,7 @@ public class PerfilRiscoConfiguration : IEntityTypeConfiguration<PerfilRisco>
 
         builder.Property(pr => pr.ExcluidoEm);
 
-        // Índices
+
         builder.HasIndex(pr => pr.ClienteId)
             .IsUnique()
             .HasDatabaseName("IX_PerfisRisco_ClienteId");

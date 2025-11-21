@@ -30,7 +30,7 @@ public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
             .IsRequired()
             .HasMaxLength(20);
 
-        // Propriedades de auditoria
+
         builder.Property(c => c.CriadoEm)
             .IsRequired();
 
@@ -42,7 +42,7 @@ public class ClienteConfiguration : IEntityTypeConfiguration<Cliente>
 
         builder.Property(c => c.ExcluidoEm);
 
-        // Índices
+
         builder.HasIndex(c => c.Cpf)
             .IsUnique()
             .HasDatabaseName("IX_Clientes_Cpf");

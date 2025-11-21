@@ -35,7 +35,7 @@ namespace AuthService.Api.Data.Migrations
                 name: "SubstituidoPor",
                 table: "RefreshTokens");
 
-            // Limpar tokens duplicados, mantendo apenas o mais recente por usuário
+
             migrationBuilder.Sql(@"
                 WITH CTE AS (
                     SELECT Id,

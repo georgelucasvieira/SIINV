@@ -23,10 +23,10 @@ public class InvestimentosDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        // Aplicar todas as configurações do assembly
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(InvestimentosDbContext).Assembly);
 
-        // Query Filters para Soft Delete
+
         modelBuilder.Entity<Produto>().HasQueryFilter(p => !p.Excluido);
         modelBuilder.Entity<Simulacao>().HasQueryFilter(s => !s.Excluido);
         modelBuilder.Entity<PerfilRisco>().HasQueryFilter(pr => !pr.Excluido);
@@ -36,7 +36,7 @@ public class InvestimentosDbContext : DbContext
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        // Atualizar timestamps automaticamente
+
         foreach (var entry in ChangeTracker.Entries())
         {
             if (entry.State == EntityState.Modified)

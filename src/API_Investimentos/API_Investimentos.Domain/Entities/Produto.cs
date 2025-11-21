@@ -74,7 +74,7 @@ public class Produto : BaseEntity
     /// </summary>
     public bool IsentoIR { get; private set; }
 
-    // Construtor privado para EF Core
+
     private Produto()
     {
         Nome = string.Empty;

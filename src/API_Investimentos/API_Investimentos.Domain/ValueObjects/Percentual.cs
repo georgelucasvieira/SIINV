@@ -54,7 +54,7 @@ public sealed class Percentual : IEquatable<Percentual>, IComparable<Percentual>
     /// </summary>
     public Dinheiro AplicarA(Dinheiro valor) => Dinheiro.Criar(valor.Valor * Valor);
 
-    // Operadores
+
     public static Percentual operator +(Percentual a, Percentual b) => new Percentual(a.Valor + b.Valor);
     public static Percentual operator -(Percentual a, Percentual b) => new Percentual(a.Valor - b.Valor);
     public static Percentual operator *(Percentual a, decimal multiplicador) => new Percentual(a.Valor * multiplicador);
@@ -63,10 +63,10 @@ public sealed class Percentual : IEquatable<Percentual>, IComparable<Percentual>
     public static bool operator >=(Percentual a, Percentual b) => a.Valor >= b.Valor;
     public static bool operator <=(Percentual a, Percentual b) => a.Valor <= b.Valor;
 
-    // Conversões implícitas
+
     public static implicit operator decimal(Percentual percentual) => percentual.Valor;
 
-    // IEquatable
+
     public bool Equals(Percentual? other)
     {
         if (other is null) return false;
@@ -85,7 +85,7 @@ public sealed class Percentual : IEquatable<Percentual>, IComparable<Percentual>
 
     public static bool operator !=(Percentual? left, Percentual? right) => !(left == right);
 
-    // IComparable
+
     public int CompareTo(Percentual? other)
     {
         if (other is null) return 1;
