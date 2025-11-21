@@ -104,4 +104,44 @@ public class SimulacoesController : ControllerBase
 
         return Ok(resultado);
     }
+
+    /// <summary>
+    /// Obtém estatísticas de simulações agrupadas por produto e dia
+    /// </summary>
+    /// <param name="dataInicio">Data inicial (opcional)</param>
+    /// <param name="dataFim">Data final (opcional)</param>
+    /// <param name="tipoProduto">Tipo do produto para filtrar (opcional)</param>
+    /// <param name="cancellationToken">Token de cancelamento</param>
+    /// <returns>Estatísticas de simulações por produto e dia</returns>
+    /// <response code="200">Estatísticas retornadas com sucesso</response>
+    /// <response code="500">Erro interno do servidor</response>
+    [HttpGet("por-produto-dia")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ObterSimulacoesPorProdutoDia(
+        [FromQuery] DateTime? dataInicio,
+        [FromQuery] DateTime? dataFim,
+        [FromQuery] string? tipoProduto,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Obtendo estatísticas de simulações por produto/dia. Período: {DataInicio} a {DataFim}, Tipo: {TipoProduto}",
+            dataInicio, dataFim, tipoProduto);
+
+        var query = new ObterSimulacoesPorProdutoDiaQuery
+        {
+            DataInicio = dataInicio,
+            DataFim = dataFim,
+            TipoProduto = tipoProduto
+        };
+
+        var resultado = await _mediator.Send(query, cancellationToken);
+
+        if (!resultado.Sucesso)
+        {
+            return BadRequest(resultado);
+        }
+
+        _logger.LogInformation("Retornadas {Quantidade} estatísticas", resultado.Dados?.Count ?? 0);
+        return Ok(resultado);
+    }
 }
