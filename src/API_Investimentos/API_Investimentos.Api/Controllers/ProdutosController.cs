@@ -62,4 +62,37 @@ public class ProdutosController : ControllerBase
         _logger.LogInformation("Retornados {Quantidade} produtos", resultado.Dados?.Count ?? 0);
         return Ok(resultado);
     }
+
+    /// <summary>
+    /// Obtém produtos recomendados para um perfil de investidor
+    /// </summary>
+    /// <param name="perfil">Perfil do investidor (Conservador, Moderado, Agressivo)</param>
+    /// <param name="cancellationToken">Token de cancelamento</param>
+    /// <returns>Lista de produtos recomendados</returns>
+    /// <response code="200">Lista de produtos recomendados retornada com sucesso</response>
+    /// <response code="400">Perfil inválido</response>
+    /// <response code="500">Erro interno do servidor</response>
+    [HttpGet("recomendados/{perfil}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> ObterProdutosRecomendados(
+        string perfil,
+        CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Obtendo produtos recomendados para perfil: {Perfil}", perfil);
+
+        var query = new ObterProdutosRecomendadosQuery { Perfil = perfil };
+        var resultado = await _mediator.Send(query, cancellationToken);
+
+        if (!resultado.Sucesso)
+        {
+            _logger.LogWarning("Erro ao obter produtos recomendados: {Mensagem}", resultado.Mensagem);
+            return BadRequest(resultado);
+        }
+
+        _logger.LogInformation("Retornados {Quantidade} produtos recomendados para perfil {Perfil}",
+            resultado.Dados?.Count ?? 0, perfil);
+        return Ok(resultado);
+    }
 }
