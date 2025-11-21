@@ -134,7 +134,76 @@ public static class DbInitializer
             await context.Produtos.AddRangeAsync(produtos);
             await context.SaveChangesAsync();
 
-            logger.LogInformation("Seed do banco de dados concluído com sucesso. {Quantidade} produtos criados.", produtos.Count);
+            logger.LogInformation("{Quantidade} produtos criados.", produtos.Count);
+
+            // Criar clientes de exemplo
+            var clientes = new List<Cliente>
+            {
+                new Cliente(
+                    nome: "João Silva Santos",
+                    cpf: "12345678901",
+                    telefone: "(11) 99999-1111"),
+
+                new Cliente(
+                    nome: "Maria Oliveira Costa",
+                    cpf: "23456789012",
+                    telefone: "(11) 99999-2222"),
+
+                new Cliente(
+                    nome: "Pedro Souza Lima",
+                    cpf: "34567890123",
+                    telefone: "(21) 98888-3333"),
+
+                new Cliente(
+                    nome: "Ana Paula Ferreira",
+                    cpf: "45678901234",
+                    telefone: "(31) 97777-4444"),
+
+                new Cliente(
+                    nome: "Carlos Eduardo Mendes",
+                    cpf: "56789012345",
+                    telefone: "(41) 96666-5555")
+            };
+
+            await context.Clientes.AddRangeAsync(clientes);
+            await context.SaveChangesAsync();
+
+            logger.LogInformation("{Quantidade} clientes criados.", clientes.Count);
+
+            // Criar perfis de risco para os clientes
+            var perfisRisco = new List<PerfilRisco>
+            {
+                new PerfilRisco(
+                    clienteId: clientes[0].Id,
+                    pontuacao: 25,
+                    fatoresCalculo: "{\"experiencia\": \"baixa\", \"objetivos\": \"preservacao\", \"horizonte\": \"curto\"}"),
+
+                new PerfilRisco(
+                    clienteId: clientes[1].Id,
+                    pontuacao: 50,
+                    fatoresCalculo: "{\"experiencia\": \"media\", \"objetivos\": \"crescimento\", \"horizonte\": \"medio\"}"),
+
+                new PerfilRisco(
+                    clienteId: clientes[2].Id,
+                    pontuacao: 75,
+                    fatoresCalculo: "{\"experiencia\": \"alta\", \"objetivos\": \"maximizar\", \"horizonte\": \"longo\"}"),
+
+                new PerfilRisco(
+                    clienteId: clientes[3].Id,
+                    pontuacao: 40,
+                    fatoresCalculo: "{\"experiencia\": \"media\", \"objetivos\": \"equilibrio\", \"horizonte\": \"medio\"}"),
+
+                new PerfilRisco(
+                    clienteId: clientes[4].Id,
+                    pontuacao: 85,
+                    fatoresCalculo: "{\"experiencia\": \"alta\", \"objetivos\": \"maximizar\", \"horizonte\": \"longo\"}")
+            };
+
+            await context.PerfisRisco.AddRangeAsync(perfisRisco);
+            await context.SaveChangesAsync();
+
+            logger.LogInformation("{Quantidade} perfis de risco criados.", perfisRisco.Count);
+            logger.LogInformation("Seed do banco de dados concluído com sucesso.");
         }
         catch (Exception ex)
         {
