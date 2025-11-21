@@ -546,7 +546,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "{job=\"api-investimentos\"} |= ``",
+          "expr": "{job=\"containerlogs\", container_name=~\".*api-investimentos.*\"} |= ``",
           "queryType": "range",
           "refId": "A"
         }
@@ -583,7 +583,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "{job=\"auth-service\"} |= ``",
+          "expr": "{job=\"containerlogs\", container_name=~\".*auth-service.*\"} |= ``",
           "queryType": "range",
           "refId": "A"
         }
@@ -620,7 +620,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "{job=\"worker-simulacao\"} |= ``",
+          "expr": "{job=\"containerlogs\", container_name=~\".*worker-simulacao.*\"} |= ``",
           "queryType": "range",
           "refId": "A"
         }
@@ -712,9 +712,9 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "sum by (job) (count_over_time({job=~\"api-investimentos|auth-service|worker-simulacao\"} [1m]))",
+          "expr": "sum by (container_name) (count_over_time({job=\"containerlogs\", container_name=~\".*api-investimentos.*|.*auth-service.*|.*worker-simulacao.*\"} [1m]))",
           "instant": false,
-          "legendFormat": "{{job}}",
+          "legendFormat": "{{container_name}}",
           "queryType": "range",
           "range": true,
           "refId": "A"
@@ -784,7 +784,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "sum(count_over_time({job=\"api-investimentos\"} |~ \"(?i)error|exception|fail\" [1h]))",
+          "expr": "sum(count_over_time({job=\"containerlogs\", container_name=~\".*api-investimentos.*\"} |~ \"(?i)error|exception|fail\" [1h]))",
           "instant": false,
           "legendFormat": "__auto",
           "queryType": "range",
@@ -856,7 +856,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "sum(count_over_time({job=\"auth-service\"} |~ \"(?i)error|exception|fail\" [1h]))",
+          "expr": "sum(count_over_time({job=\"containerlogs\", container_name=~\".*auth-service.*\"} |~ \"(?i)error|exception|fail\" [1h]))",
           "instant": false,
           "legendFormat": "__auto",
           "queryType": "range",
@@ -928,7 +928,7 @@
             "uid": "loki"
           },
           "editorMode": "code",
-          "expr": "sum(count_over_time({job=\"worker-simulacao\"} |~ \"(?i)error|exception|fail\" [1h]))",
+          "expr": "sum(count_over_time({job=\"containerlogs\", container_name=~\".*worker-simulacao.*\"} |~ \"(?i)error|exception|fail\" [1h]))",
           "instant": false,
           "legendFormat": "__auto",
           "queryType": "range",

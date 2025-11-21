@@ -1,32 +1,76 @@
-# 🏦 Sistema de Simulação de Investimentos
+# Sistema de Simulacao de Investimentos
 
-> Painel de Investimentos com Perfil de Risco Dinâmico - Desafio Backend .NET
+> Painel de Investimentos com Perfil de Risco Dinamico - Desafio Backend .NET
 
 [![.NET Version](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![SQL Server](https://img.shields.io/badge/SQL%20Server-2022-CC2927?logo=microsoft-sql-server)](https://www.microsoft.com/sql-server)
 [![RabbitMQ](https://img.shields.io/badge/RabbitMQ-3.13-FF6600?logo=rabbitmq)](https://www.rabbitmq.com/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-
-## 📋 Visão Geral
-
-Sistema distribuído para simulação de investimentos financeiros (CDB, Tesouro Direto, Fundos, LCI/LCA) com:
-
-- ✨ Arquitetura orientada a eventos
-- 🔐 Autenticação JWT com RBAC
-- 📊 Observabilidade completa (logs estruturados, distributed tracing)
-- 🧪 TDD com 80%+ cobertura
-- 🚀 Processamento assíncrono
-- 📈 Motor de recomendação por perfil de risco
 
 ---
 
-## 🏗️ Arquitetura
+## Quick Start
 
-Documentação detahada da arquitetura e design técnico:
-- 📐 **[Arquitetura](docs/ARQUITETURA.md)**: Documentação completa da arquitetura, diagramas C4, stack tecnológico
-- 📐 **[System Design](docs/design-tecnico/README.md)**: Design Técnico completo, esquema de banco de dados,
+### Pre-requisitos
 
+- [Docker](https://www.docker.com/get-started) 20.10+
+- [Docker Compose](https://docs.docker.com/compose/) 2.0+
+
+### Executar o Sistema
+
+O sistema utiliza **dois profiles Docker**:
+
+| Profile | Descricao | Servicos |
+|---------|-----------|----------|
+| **core** | Servicos essenciais | API, Auth, Worker, SQL Server, RabbitMQ, Loki, Promtail |
+| **observabilidade** | Monitoramento completo | Prometheus, Grafana |
+
+
+```bash
+# Subir apenas servicos core
+docker compose --profile core up -d
+
+# Subir com monitoramento completo (Prometheus + Grafana)
+docker compose --profile core --profile observabilidade up -d
+
+# Verificar status
+docker compose ps
+```
+**Dica para ver logs com Grafana**: entre na aba Explore > Label Filters > container_name = service que deseja observar os logs
+
+### Acessar Interfaces
+
+| Servico | URL | Credenciais |
+|---------|-----|-------------|
+| **API Swagger** | http://localhost:5001 | - |
+| **Auth Swagger** | http://localhost:5002 | - |
+| **RabbitMQ Management** | http://localhost:15672 | admin / admin123 |
+| **Grafana Dashboard** | http://localhost:3000 | admin / admin |
+| **Prometheus** | http://localhost:9090 | - |
+
+![Swagger Api Investimentos](docs/img/swagger-1.png)
+![Swagger Api Auth](docs/img/swagger-2.png)
+![Grafana](docs/img/monitoramento.png)
+
+---
+
+## Visao Geral
+
+Sistema distribuido para simulacao de investimentos financeiros (CDB, Tesouro Direto, Fundos, LCI/LCA) com:
+
+- Arquitetura orientada a eventos
+- Autenticacao JWT com RBAC
+- Observabilidade completa (Serilog + Loki + Prometheus + Grafana)
+- Processamento assincrono via RabbitMQ
+- Motor de recomendacao por perfil de risco
+
+---
+
+## Arquitetura
+
+Documentacao detalhada:
+- [Arquitetura](docs/ARQUITETURA.md): Documentacao completa, diagramas C4, stack tecnologico
+- [Design Tecnico](docs/design-tecnico/README.md): Esquema de banco de dados, calculos, eventos
 
 ### Componentes
 
@@ -45,12 +89,16 @@ graph LR
     Auth -.->|Logs| Loki
     Worker -.->|Logs| Loki
 
+    API -.->|Metricas| Prom[Prometheus]
+    Auth -.->|Metricas| Prom
+
     style API fill:#1168bd,color:#fff
     style Auth fill:#1168bd,color:#fff
     style Worker fill:#1168bd,color:#fff
     style DB fill:#cc2927,color:#fff
     style RMQ fill:#ff6600,color:#fff
     style Loki fill:#f46800,color:#fff
+    style Prom fill:#e6522c,color:#fff
 ```
 
 ### Tech Stack
@@ -60,364 +108,267 @@ graph LR
 | **Backend** | .NET 9, ASP.NET Core, EF Core |
 | **Database** | SQL Server 2022 |
 | **Message Broker** | RabbitMQ 3.13 |
-| **Observabilidade** | Serilog, Grafana Loki, Promtail, OpenTelemetry |
-| **Autenticação** | JWT Bearer, BCrypt |
-| **Cache** | IMemoryCache |
-| **Testes** | xUnit, FluentAssertions, Testcontainers, k6 |
+| **Observabilidade** | Serilog, Grafana Loki, Promtail, Prometheus, Grafana |
+| **Autenticacao** | JWT Bearer, BCrypt |
+| **Testes** | xUnit, FluentAssertions, NSubstitute |
 
-### Padrões Arquiteturais
+### Padroes Arquiteturais
 
 - **API_Investimentos**: Clean Architecture + CQRS
-- **Auth Service**: Vertical Slice Architecture + CQRS
-- **Worker Service**: Vertical Slice Architecture
+- **Auth Service**: Vertical Slice Architecture
+- **Worker Service**: Background Service
 
 ---
 
-## 🚀 Quick Start
+## Endpoints da API
 
-### Pré-requisitos
-
-- [Docker](https://www.docker.com/get-started) 20.10+
-- [Docker Compose](https://docs.docker.com/compose/) 2.0+
-- 2GB RAM disponível (core services)
-
-### Executar o Sistema
-
-```bash
-# Clonar o repositório
-git clone <repo-url>
-cd Projeto_Psi_Investimento
-
-# Subir apenas serviços core (API + Auth + Worker + SQL Server + RabbitMQ + Loki)
-docker-compose up -d
-
-# Subir com monitoramento completo (adiciona Grafana, Prometheus, Tempo)
-docker-compose --profile monitoring up -d
-
-# Verificar status
-docker-compose ps
-
-# Verificar saúde da API
-curl http://localhost:5000/health
-```
-
-### Acessar Interfaces
-
-| Serviço | URL | Credenciais |
-|---------|-----|-------------|
-| **API Swagger** | http://localhost:5000/swagger | - |
-| **RabbitMQ Management** | http://localhost:15672 | admin / admin123 |
-| **Grafana Loki** | http://localhost:3100/metrics | - |
-| **Grafana Dashboard** | http://localhost:3000 | admin / admin |
-
----
-
-### Endpoints da API
-
-#### Autenticação
+### Auth Service (porta 5002)
 
 ```http
-POST /api/v1/auth/login
-POST /api/v1/auth/refresh
+POST /api/v1/auth/login          # Login
+POST /api/v1/auth/register       # Registrar usuario
+POST /api/v1/auth/refresh        # Refresh token
+GET  /api/v1/auth/me             # Usuario atual
+GET  /health                     # Health check
+GET  /metrics                    # Metricas Prometheus
 ```
 
-#### Simulações
+### API Investimentos (porta 5001)
+
+#### Simulacoes
 
 ```http
-POST   /api/v1/simulacoes              # Criar simulação
-GET    /api/v1/simulacoes              # Listar todas
-GET    /api/v1/simulacoes/{id}         # Buscar por ID
-GET    /api/v1/simulacoes/por-produto-dia  # Agregação
-```
-
-#### Perfil de Risco
-
-```http
-GET /api/v1/perfil-risco/{clienteId}
+POST /api/v1/simulacoes                    # Criar simulacao
+GET  /api/v1/simulacoes                    # Listar simulacoes
+GET  /api/v1/simulacoes/por-produto-dia    # Agregacao por produto/dia
 ```
 
 #### Produtos
 
 ```http
-GET /api/v1/produtos-recomendados/{perfil}
+GET /api/v1/produtos                       # Listar produtos
+GET /api/v1/produtos-recomendados/{perfil} # Produtos recomendados
+```
+
+#### Perfil de Risco
+
+```http
+POST /api/v1/perfil-risco                  # Cadastrar perfil
+GET  /api/v1/perfil-risco/{clienteId}      # Obter perfil
+```
+
+#### Clientes
+
+```http
+POST /api/v1/clientes                      # Cadastrar cliente
+GET  /api/v1/clientes                      # Listar clientes
+GET  /api/v1/clientes/{id}                 # Obter cliente
 ```
 
 #### Telemetria
 
 ```http
-GET /api/v1/telemetria
+GET /api/v1/telemetria                     # Metricas de uso dos endpoints
+```
+
+#### Health & Metrics
+
+```http
+GET /metrics                               # Metricas Prometheus
 ```
 
 ### Exemplo de Request
 
-```json
-POST /api/v1/simulacoes
-Authorization: Bearer <token>
+```bash
+# Login
+curl -X POST http://localhost:5002/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@teste.com", "senha": "Admin@123"}'
 
-{
-  "clienteId": 123,
-  "valor": 10000.00,
-  "prazoMeses": 12,
-  "tipoProduto": "CDB"
-}
-```
-
-### Exemplo de Response
-
-```json
-{
-  "produtoValidado": true,
-  "id": 101,
-  "nome": "CDB Caixa 2026",
-  "tipo": "CDB",
-  "rentabilidade": 0.12,
-  "risco": "Baixo",
-  "resultadoSimulacao": {
-    "valorFinal": 11200.00,
-    "rentabilidadeEfetiva": 0.12,
+# Criar simulacao
+curl -X POST http://localhost:5001/api/v1/simulacoes \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "valor": 10000.00,
     "prazoMeses": 12,
-    "dataSimulacao": "2025-11-16T14:00:00Z"
-  }
-}
+    "tipoProduto": "CDB"
+  }'
 ```
 
 ---
 
-## 🧪 Testes
+## Testes
 
 ### Executar Testes
 
 ```bash
-# Testes unitários
-dotnet test --filter Category=Unit
+# Todos os testes
+dotnet test
 
-# Testes de integração
-dotnet test --filter Category=Integration
-
-# Todos os testes com cobertura
-dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
-
-# Gerar relatório de cobertura
-reportgenerator -reports:**/coverage.cobertura.xml -targetdir:coverage-report
+# Testes unitarios com cobertura
+dotnet test tests/API_Investimentos.Tests/API_Investimentos.UnitTests --collect:"XPlat Code Coverage"
 ```
 
-### Testes de Performance
+### Cobertura Atual
 
-```bash
-# Executar teste de carga com k6
-k6 run tests/performance/load-test.js
-
-# Com variáveis de ambiente
-k6 run -e AUTH_TOKEN=<token> tests/performance/load-test.js
-```
-
-### Cobertura Alvo
-
-- **Unit Tests**: 80%+ cobertura
-- **Integration Tests**: Todos os fluxos principais
-- **E2E Tests**: 5-10 cenários críticos
-- **Performance Tests**: < 500ms P95, < 1% erro
+- **177 testes unitarios**
+- Cobertura em entidades, handlers, validators e services
 
 ---
 
-## 🔐 Segurança
-
-### Autenticação & Autorização
-
-- **JWT Bearer Tokens**: 15 minutos (access token)
-- **Refresh Tokens**: 7 dias com rotação automática
-- **RBAC**: 3 roles (Admin, Manager, User)
-- **Password Hashing**: BCrypt com salt
-
-### Rate Limiting
-
-- **Global**: 100 req/min por IP
-- **Simulações**: 20 req/min por IP
-- **Response**: HTTP 429 (Too Many Requests)
-
-### Validações
-
-- FluentValidation em todos os commands
-- Sanitização de inputs
-- CORS configurado
-- HTTPS obrigatório (production)
-
----
-
-## 📊 Observabilidade
+## Observabilidade
 
 ### Logs Estruturados
 
-- **Formato**: JSON (Serilog)
+- **Formato**: JSON compacto (Serilog CompactJsonFormatter)
 - **Armazenamento**: Grafana Loki
 - **Coleta**: Promtail
-- **Campos**: correlationId, userId, service, timestamp
 
-### Distributed Tracing
+### Metricas
 
-- **Instrumentação**: OpenTelemetry
-- **Armazenamento**: Grafana Tempo (opcional)
-- **Propagação**: W3C Trace Context
+- **Coleta**: prometheus-net
+- **Armazenamento**: Prometheus
+- **Visualizacao**: Grafana
 
-### Health Checks
+O dashboard pre-configurado inclui:
+- Taxa de requisicoes por endpoint
+- Latencia p50/p95
+- Contagem de erros
+- Volume de logs por servico
 
-```bash
-curl http://localhost:5000/health
+### Telemetria de Negocios
 
-curl http://localhost:5000/health/ready
-
-curl http://localhost:5000/health/live
-```
-
-### Métricas
-
-- Request count, duration, errors
-- Database connection pool
-- RabbitMQ queue depth
-- Cache hit/miss ratio
+O endpoint `/api/v1/telemetria` retorna metricas de uso:
+- Quantidade de chamadas por endpoint
+- Tempo medio de resposta
 
 ---
 
-## 🛠️ Desenvolvimento
+## Limites de Recursos (Docker)
 
-### Estrutura do Repositório
+| Servico | RAM |
+|---------|-----|
+| API Investimentos | 150 MB |
+| Auth Service | 120 MB |
+| Worker Simulacao | 100 MB |
+| SQL Server | 512 MB |
+| RabbitMQ | 150 MB |
+| Loki | 100 MB |
+| Promtail | 50 MB |
+| Prometheus | 200 MB |
+| Grafana | 150 MB |
+
+**Total Core**: ~1082 MB
+**Total com Observabilidade**: ~1432 MB
+
+---
+
+## Estrutura do Repositorio
 
 ```
 Projeto_Psi_Investimento/
 ├── src/
 │   ├── API_Investimentos/          # Clean Architecture
-│   │   ├── Domain/
-│   │   ├── Application/
-│   │   ├── Infrastructure/
-│   │   └── Presentation/
-│   ├── AuthService/                # Vertical Slice
-│   │   ├── Features/
-│   │   ├── Domain/
-│   │   └── Infrastructure/
-│   └── WorkerService/              # Vertical Slice
-│       ├── Handlers/
-│       └── Infrastructure/
+│   │   ├── API_Investimentos.Api/
+│   │   ├── API_Investimentos.Application/
+│   │   ├── API_Investimentos.Domain/
+│   │   └── API_Investimentos.Infrastructure/
+│   ├── AuthService/                # Minimal API
+│   │   └── AuthService.Api/
+│   └── Worker_Simulacao/           # Background Service
+│       └── Worker_Simulacao/
 ├── tests/
-│   ├── UnitTests/
-│   ├── IntegrationTests/
-│   ├── E2ETests/
-│   └── PerformanceTests/
+│   └── API_Investimentos.Tests/
+│       ├── API_Investimentos.UnitTests/
+│       └── API_Investimentos.IntegrationTests/
+├── config/
+│   ├── loki.yaml
+│   ├── promtail.yaml
+│   ├── prometheus.yml
+│   └── grafana/
+│       └── provisioning/
 ├── docs/
 │   ├── ARQUITETURA.md
-│   ├── CONTEXT.md
-│   └── CHANGELOG.md
-├── scripts/
-│   └── init-db.sh
-├── config/
-│   ├── promtail.yaml
-│   └── tempo.yaml
+│   └── design-tecnico/
 ├── docker-compose.yml
 └── README.md
 ```
 
-### Comandos Úteis
+---
+
+## Comandos Uteis
 
 ```bash
 # Build local
 dotnet build
 
-# Restaurar dependências
-dotnet restore
-
 # Executar API localmente
-dotnet run --project src/API_Investimentos
-
-# Migrations
-dotnet ef migrations add InitialCreate --project src/API_Investimentos
-dotnet ef database update --project src/API_Investimentos
+dotnet run --project src/API_Investimentos/API_Investimentos.Api
 
 # Logs em tempo real
-docker-compose logs -f api-investimentos
-docker-compose logs -f worker-service
+docker compose logs -f api-investimentos
+docker compose logs -f auth-service
+
+# Parar servicos
+docker compose --profile core --profile observabilidade down
 ```
 
 ---
 
-## 📈 Recursos do Sistema
+## Seguranca
 
-### Consumo de RAM (Docker)
+### Autenticacao & Autorizacao
 
-| Configuração | RAM Total | Containers |
-|-------------|-----------|------------|
-| **Core** (obrigatório) | 1182 MB | API, Auth, Worker, SQL Server, RabbitMQ, Loki, Promtail |
-| **Full** (com monitoring) | 1632 MB | Core + Grafana, Prometheus, Tempo |
+- **JWT Bearer Tokens**: Access token + Refresh token
+- **RBAC**: Roles (Admin, Gerente, Usuario)
+- **Password Hashing**: BCrypt
 
-### Estimativa de Storage
+### Usuarios Padrao (Seed)
 
-- **Inicial**: ~400 MB
-- **1 ano de dados**: ~4 GB
-
----
-
-## 🎯 Features Implementadas
-
-### Funcionalidades de Negócio
-
-- ✅ Simulação de investimentos (CDB, Tesouro, Fundos, LCI/LCA)
-- ✅ Cálculo de rentabilidade por tipo de produto
-- ✅ Motor de recomendação por perfil de risco
-- ✅ Histórico de simulações
-- ✅ Agregações por produto/dia
-- ✅ Telemetria de serviços
-
-### Funcionalidades Técnicas
-
-- ✅ Clean Architecture
-- ✅ CQRS Pattern
-- ✅ Event-Driven Architecture
-- ✅ Outbox Pattern
-- ✅ Repository & Unit of Work
-- ✅ Strategy Pattern (cálculos)
-- ✅ Circuit Breaker (Polly)
-- ✅ Retry Policies
-- ✅ Health Checks
-- ✅ API Versioning
-- ✅ Swagger/OpenAPI
-- ✅ Database Migrations
-- ✅ Structured Logging
-- ✅ Distributed Tracing
-- ✅ Rate Limiting
-- ✅ Caching
-- ✅ Validation (FluentValidation)
+| Email | Senha | Role |
+|-------|-------|------|
+| admin@teste.com | Admin@123 | Admin |
+| gerente@teste.com | Gerente@123 | Gerente |
+| usuario@teste.com | Usuario@123 | Usuario |
 
 ---
 
+## Features Implementadas
 
-## 👤 Autor
+### Funcionalidades de Negocio
+
+- Simulacao de investimentos (CDB, Tesouro, Fundos, LCI/LCA)
+- Calculo de rentabilidade por tipo de produto
+- Motor de recomendacao por perfil de risco
+- Historico de simulacoes
+- Agregacoes por produto/dia
+- Telemetria de servicos
+
+### Funcionalidades Tecnicas
+
+- Clean Architecture
+- CQRS Pattern
+- Event-Driven Architecture (RabbitMQ)
+- Repository & Unit of Work
+- Strategy Pattern (calculos)
+- API Versioning
+- Swagger/OpenAPI
+- Structured Logging (Serilog + Loki)
+- Metricas (Prometheus)
+- Dashboard (Grafana)
+
+---
+
+## Autor
 
 **George**
 
-- Desafio: Painel de Investimentos com Perfil de Risco Dinâmico
+- Desafio: Painel de Investimentos com Perfil de Risco Dinamico
 - Foco: Backend .NET, Arquitetura, Testes, Observabilidade
 
 ---
 
-## 📄 Licença
+## Licenca
 
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
----
-
-## 🙏 Agradecimentos
-
-Desenvolvido como parte do desafio técnico backend .NET, demonstrando:
-
-- Arquitetura de software escalável
-- Boas práticas de desenvolvimento
-- Testes abrangentes
-- Observabilidade completa
-- Padrões de design modernos
-- Documentação exemplar
-
----
-
-**Status do Projeto**: 🚧 Em Desenvolvimento
-
-**Versão Atual**: 1.1 (Design Arquitetural Completo)
-
-**Próximos Passos**: Design técnico detalhado → Implementação → Testes → Deploy
+Este projeto esta sob a licenca MIT.
