@@ -11,7 +11,7 @@ namespace API_Investimentos.Api.Controllers;
 /// Controller para simulações de investimento
 /// </summary>
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1")]
 [Produces("application/json")]
 [Authorize]
 public class SimulacoesController : ControllerBase
@@ -34,7 +34,7 @@ public class SimulacoesController : ControllerBase
     /// <response code="200">Simulação realizada com sucesso</response>
     /// <response code="400">Dados inválidos</response>
     /// <response code="500">Erro interno do servidor</response>
-    [HttpPost("simular")]
+    [HttpPost("simular-investimento")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -76,7 +76,7 @@ public class SimulacoesController : ControllerBase
     /// <returns>Lista de simulações</returns>
     /// <response code="200">Lista de simulações retornada com sucesso</response>
     /// <response code="500">Erro interno do servidor</response>
-    [HttpGet]
+    [HttpGet("simulacoes")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ObterSimulacoes(
@@ -115,7 +115,7 @@ public class SimulacoesController : ControllerBase
     /// <returns>Estatísticas de simulações por produto e dia</returns>
     /// <response code="200">Estatísticas retornadas com sucesso</response>
     /// <response code="500">Erro interno do servidor</response>
-    [HttpGet("por-produto-dia")]
+    [HttpGet("simulacoes/por-produto-dia")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> ObterSimulacoesPorProdutoDia(

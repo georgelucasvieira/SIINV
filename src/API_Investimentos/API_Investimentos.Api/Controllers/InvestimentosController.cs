@@ -10,7 +10,7 @@ namespace API_Investimentos.Api.Controllers;
 /// Controller para gerenciamento de investimentos
 /// </summary>
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/investimentos")]
 [Produces("application/json")]
 [Authorize]
 public class InvestimentosController : ControllerBase

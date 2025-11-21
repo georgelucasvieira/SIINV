@@ -10,7 +10,7 @@ namespace API_Investimentos.Api.Controllers;
 /// Controller para gerenciamento de clientes
 /// </summary>
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1/clientes")]
 [Produces("application/json")]
 [Authorize]
 public class ClientesController : ControllerBase

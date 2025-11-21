@@ -9,7 +9,7 @@ namespace API_Investimentos.Api.Controllers;
 /// Controller para produtos de investimento
 /// </summary>
 [ApiController]
-[Route("api/v1/[controller]")]
+[Route("api/v1")]
 [Produces("application/json")]
 [Authorize]
 public class ProdutosController : ControllerBase
@@ -33,7 +33,7 @@ public class ProdutosController : ControllerBase
     /// <response code="200">Lista de produtos retornada com sucesso</response>
     /// <response code="400">Tipo de produto inválido</response>
     /// <response code="500">Erro interno do servidor</response>
-    [HttpGet]
+    [HttpGet("produtos")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -72,7 +72,7 @@ public class ProdutosController : ControllerBase
     /// <response code="200">Lista de produtos recomendados retornada com sucesso</response>
     /// <response code="400">Perfil inválido</response>
     /// <response code="500">Erro interno do servidor</response>
-    [HttpGet("recomendados/{perfil}")]
+    [HttpGet("produtos-recomendados/{perfil}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
