@@ -28,6 +28,15 @@ builder.Services.AddControllers();
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Configurar HttpClient para AuthService
+var authServiceUrl = builder.Configuration["AuthService:BaseUrl"]
+    ?? throw new InvalidOperationException("AuthService:BaseUrl não configurado");
+builder.Services.AddHttpClient("AuthService", client =>
+{
+    client.BaseAddress = new Uri(authServiceUrl);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 // Configurar JWT Authentication
 // Tokens são gerados pelo Auth Service, aqui apenas validamos
 var jwtSection = builder.Configuration.GetSection("Jwt");
