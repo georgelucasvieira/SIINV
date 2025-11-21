@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using API_Investimentos.Api.Middleware;
+using API_Investimentos.Api.Services;
 using API_Investimentos.Application;
 using API_Investimentos.Infrastructure;
 using API_Investimentos.Infrastructure.Data;
@@ -26,6 +27,8 @@ builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 
+
+builder.Services.AddSingleton<ITelemetriaService, TelemetriaService>();
 
 builder.Services.AddApplication();
 builder.Services.AddInfrastructure(builder.Configuration);
@@ -183,6 +186,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
+
+app.UseMiddleware<TelemetriaMiddleware>();
 
 app.UseSerilogRequestLogging();
 
