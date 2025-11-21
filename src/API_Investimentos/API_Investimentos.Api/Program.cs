@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using API_Investimentos.Api.Middleware;
 using API_Investimentos.Application;
@@ -44,6 +46,9 @@ var secret = jwtSection["Secret"] ?? throw new InvalidOperationException("JWT Se
 var issuer = jwtSection["Issuer"] ?? throw new InvalidOperationException("JWT Issuer não configurado");
 var audience = jwtSection["Audience"] ?? throw new InvalidOperationException("JWT Audience não configurado");
 
+// Desabilitar mapeamento automático de claims do JWT (igual ao AuthService)
+JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -62,7 +67,9 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = issuer,
         ValidAudience = audience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret)),
-        ClockSkew = TimeSpan.Zero
+        ClockSkew = TimeSpan.Zero,
+        NameClaimType = ClaimTypes.NameIdentifier,
+        RoleClaimType = ClaimTypes.Role
     };
 });
 
@@ -109,11 +116,12 @@ builder.Services.AddSwaggerGen(c =>
     // Configurar autenticação JWT no Swagger
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "JWT Authorization header usando o esquema Bearer. Exemplo: \"Authorization: Bearer {token}\"",
+        Description = "JWT Authorization header usando o esquema Bearer. Insira apenas o token (sem 'Bearer ').",
         Name = "Authorization",
         In = ParameterLocation.Header,
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer"
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
     });
 
     c.AddSecurityRequirement(new OpenApiSecurityRequirement
