@@ -17,18 +17,31 @@ public static class DbInitializer
         {
             // Criar banco de dados se não existir
             await context.Database.MigrateAsync();
-
-            // Verificar se já existem produtos
-            if (await context.Produtos.AnyAsync())
-            {
-                logger.LogInformation("Banco de dados já contém dados. Seed ignorado.");
-                return;
-            }
-
             logger.LogInformation("Iniciando seed do banco de dados...");
+            
+            await SeedProdutos(context, logger);
+            await SeedClientes(context, logger); // Realiza seed de clientes e perfis de risco
 
-            // Criar produtos de exemplo
-            var produtos = new List<Produto>
+            logger.LogInformation("Seed do banco de dados concluído com sucesso.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao realizar seed do banco de dados");
+            throw;
+        }
+    }
+
+    public static async Task SeedProdutos(InvestimentosDbContext context, ILogger logger)
+    {
+        // Verificar se já existem produtos
+        if (await context.Produtos.AnyAsync())
+        {
+            logger.LogInformation("Banco de dados já contém produtos, seed ignorado.");
+            return;
+        }
+
+        // Criar produtos de exemplo
+        var produtos = new List<Produto>
             {
                 // CDBs
                 new Produto(
@@ -125,19 +138,29 @@ public static class DbInitializer
                     isentoIR: false)
             };
 
-            // Configurar taxas de administração para fundos
-            produtos[7].DefinirTaxaAdministracao(Percentual.CriarDePercentual(1.5m));
-            produtos[8].DefinirTaxaAdministracao(Percentual.CriarDePercentual(2.0m));
-            produtos[8].DefinirTaxaPerformance(Percentual.CriarDePercentual(20.0m));
+        // Configurar taxas de administração para fundos
+        produtos[7].DefinirTaxaAdministracao(Percentual.CriarDePercentual(1.5m));
+        produtos[8].DefinirTaxaAdministracao(Percentual.CriarDePercentual(2.0m));
+        produtos[8].DefinirTaxaPerformance(Percentual.CriarDePercentual(20.0m));
 
-            // Adicionar produtos ao contexto
-            await context.Produtos.AddRangeAsync(produtos);
-            await context.SaveChangesAsync();
+        // Adicionar produtos ao contexto
+        await context.Produtos.AddRangeAsync(produtos);
+        await context.SaveChangesAsync();
 
-            logger.LogInformation("{Quantidade} produtos criados.", produtos.Count);
+        logger.LogInformation("{Quantidade} produtos criados.", produtos.Count);
+    }
 
-            // Criar clientes de exemplo
-            var clientes = new List<Cliente>
+    public static async Task SeedClientes(InvestimentosDbContext context, ILogger logger)
+    {
+        // Verificar se já existem clientes
+        if (await context.Clientes.AnyAsync())
+        {
+            logger.LogInformation("Banco de dados já contém clientes, seed ignorado.");
+            return;
+        }
+
+        // Criar clientes de exemplo
+        var clientes = new List<Cliente>
             {
                 new Cliente(
                     nome: "João Silva Santos",
@@ -165,13 +188,37 @@ public static class DbInitializer
                     telefone: "(41) 96666-5555")
             };
 
-            await context.Clientes.AddRangeAsync(clientes);
-            await context.SaveChangesAsync();
+        await context.Clientes.AddRangeAsync(clientes);
+        await context.SaveChangesAsync();
 
-            logger.LogInformation("{Quantidade} clientes criados.", clientes.Count);
+        logger.LogInformation("{Quantidade} clientes criados.", clientes.Count);
 
-            // Criar perfis de risco para os clientes
-            var perfisRisco = new List<PerfilRisco>
+        await SeedPerfisRisco(context, logger, clientes);
+    }
+
+    public static async Task SeedPerfisRisco(InvestimentosDbContext context, ILogger logger, List<Cliente> clientes)
+    {
+        // Carregar clientes se não fornecidos
+        if (clientes == null)
+        {
+            clientes = await context.Clientes.ToListAsync();
+        }
+
+        if (clientes.Count < 5)
+        {
+            logger.LogWarning("Número insuficiente de clientes para criar perfis de risco. Perfis não criados.");
+            return;
+        }
+    
+        // Verificar se já existem perfis de risco
+        if (await context.PerfisRisco.AnyAsync())
+        {
+            logger.LogInformation("Banco de dados já contém perfis de risco, seed ignorado.");
+            return;
+        }
+
+        // Criar perfis de risco para os clientes
+        var perfisRisco = new List<PerfilRisco>
             {
                 new PerfilRisco(
                     clienteId: clientes[0].Id,
@@ -199,16 +246,9 @@ public static class DbInitializer
                     fatoresCalculo: "{\"experiencia\": \"alta\", \"objetivos\": \"maximizar\", \"horizonte\": \"longo\"}")
             };
 
-            await context.PerfisRisco.AddRangeAsync(perfisRisco);
-            await context.SaveChangesAsync();
+        await context.PerfisRisco.AddRangeAsync(perfisRisco);
+        await context.SaveChangesAsync();
 
-            logger.LogInformation("{Quantidade} perfis de risco criados.", perfisRisco.Count);
-            logger.LogInformation("Seed do banco de dados concluído com sucesso.");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Erro ao realizar seed do banco de dados");
-            throw;
-        }
+        logger.LogInformation("{Quantidade} perfis de risco criados.", perfisRisco.Count);
     }
 }
